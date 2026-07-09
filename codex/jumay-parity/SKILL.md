@@ -147,7 +147,30 @@ Do not call the work complete until all applicable gates are true:
   the live PR head SHA before continuing or reporting completion. Do not treat
   an older review-agent comment as current unless its "last reviewed commit" (or
   equivalent metadata) matches the live head SHA. If the latest agent feedback
-  is stale, keep polling or explicitly state that the review is still pending.
+  is stale, wait with a blocking watch or sleep at least 60 seconds between
+  rechecks; do not re-read the full PR in a tight loop. If it stays stale,
+  explicitly state that the review is still pending.
+
+## Efficiency Rules
+
+Waiting is free; polling is not. Every repeated status read re-loads large
+JSON and screenshot payloads into context. In measured runs, polling and
+re-reading dominated token spend (11-19M input tokens per ticket at a ~0.3%
+output ratio), so:
+
+- Prefer one blocking command over repeated status reads: use
+  `gh pr checks <pr> --watch` for CI. For review agents that expose no
+  watchable check, sleep at least 60 seconds between rechecks and fetch only
+  the fields needed (`gh pr view <pr> --json headRefOid,statusCheckRollup`),
+  not the whole PR.
+- Export each referenced Figma node to PNG once per ticket, store it in the
+  evidence directory, and reuse that file for every later comparison and
+  overlay. Re-fetch from Figma only when the node reference changes or a
+  reviewer corrects the node.
+- Capture component-scoped element screenshots from the first iteration; never
+  capture full pages intending to crop later.
+- On each visual iteration, re-capture and re-inspect only the stories/states
+  that changed since the previous iteration, not the full evidence set.
 
 ## Workflow
 
@@ -181,6 +204,9 @@ Do not call the work complete until all applicable gates are true:
      over page/overview screenshots. If a Figma link points to a page or broad
      overview, drill down to the exact component node before producing PR
      evidence.
+   - Export each referenced Figma node once per ticket and reuse the stored
+     PNG across all later iterations, overlays, and PR evidence; do not
+     re-fetch the same node from Figma inside the fix-and-recheck loop.
    - Capture dark-mode Figma component nodes when present. If the Figma file has
      no explicit dark-mode node, document the absence and use the component's
      design tokens plus Storybook dark-mode screenshots as the dark-mode check.
@@ -294,7 +320,8 @@ Do not call the work complete until all applicable gates are true:
 6. Verify with Playwright.
    - Start Storybook locally.
    - Capture iframe element screenshots, not full pages, at the relevant
-     viewport/theme/state.
+     viewport/theme/state — starting from the first iteration, not only the
+     final evidence pass.
    - Capture and inspect dark-mode Storybook screenshots for every changed
      component state that can render in dark mode. Use the project's existing
      theme toggle, decorator, `globals`, CSS class, or URL parameter rather than
@@ -437,15 +464,17 @@ Do not call the work complete until all applicable gates are true:
      - If the audit fails, fix the PR body and rerun the audit. Do not mark the
        PR ready for review, do not post/share to Slack, and do not claim
        review-readiness while the audit is failing.
-   - Wait for GitHub checks and Greptile/Devin comments/checks; address their
-     feedback before final handoff.
+   - Wait for GitHub checks with a blocking watch (`gh pr checks <pr> --watch`),
+     then read Greptile/Devin comments once; address their feedback before
+     final handoff.
    - After each pushed commit or PR-body/doc update, verify the review-agent
      result is fresh for the live head SHA:
      - Read `gh pr view <pr> --json headRefOid,statusCheckRollup,comments`.
      - Confirm the Greptile/Devin check is `COMPLETED` and successful.
      - Confirm the latest review-agent comment's reviewed commit SHA matches
-       `headRefOid`. If it still references an older commit, wait and poll
-       again; do not claim the score or feedback is final.
+       `headRefOid`. If it still references an older commit, sleep at least 60
+       seconds and recheck only those JSON fields; do not claim the score or
+       feedback is final.
      - If the fresh agent review reports actionable findings, fix them, push,
        and repeat this wait loop.
 
