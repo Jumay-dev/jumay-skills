@@ -126,6 +126,14 @@ Do not call the work complete until all applicable gates are true:
   resolved when the platform exposes a resolvable thread. Do this even if a
   newer agent summary comment is already clean; the original actionable thread
   still needs the reply/resolution trail.
+- The unresolved review-thread count is machine-verified at the final head:
+  query the GraphQL `reviewThreads` API and require zero threads with
+  `isResolved: false`, or list each remaining unresolved thread in the final
+  report with its non-actionable rationale. `isOutdated: true` does not mean
+  resolved — unresolved-but-outdated threads still require the
+  reply-and-resolve trail. Run this verification only after the final push's
+  checks and review-agent runs have completed, because review bots can open
+  new threads on the final head.
 - Top-level comments, latest reviews, and thread-aware review comments for
   every opened parity PR have been re-read after fixes; every actionable
   Greptile, Devin, GitHub review, and human item is fixed or explicitly
@@ -479,6 +487,23 @@ output ratio), so:
        and repeat this wait loop.
 
 9. Close the review loop.
+   - Run the final thread sweep only after the last push's CI and review-agent
+     checks have completed on the live head; review bots open new threads
+     late, and a sweep done before their final run misses them.
+   - Machine-verify closure instead of judging thread state from summaries or
+     `isOutdated` flags. Zero unresolved threads is the gate:
+
+     ```sh
+     gh api graphql -f query='query($o:String!,$r:String!,$n:Int!){
+       repository(owner:$o,name:$r){pullRequest(number:$n){
+         reviewThreads(first:100){nodes{isResolved}}}}}' \
+       -f o=OWNER -f r=REPO -F n=<pr> \
+       --jq '[.data.repository.pullRequest.reviewThreads.nodes[]
+              | select(.isResolved==false)] | length'
+     ```
+
+     Any nonzero count means unfinished work: fix and resolve each thread, or
+     document why it is non-actionable in the final report.
    - Use thread-aware GitHub review reads for inline comments; flat PR comments
      are not enough.
    - If an app exposes only a summary review comment, open the linked review or
