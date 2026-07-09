@@ -78,6 +78,20 @@ you — the agent has the context and must own its PR.
 
 - Report a task → pane → PR → status mapping; state what you verified vs what
   the agent claimed.
+- Always include an efficiency table: run `scripts/fleet-stats.sh
+  <pane_id>...` (from this skill's directory) BEFORE closing any pane. It
+  parses each agent's TUI status line into per-agent duration, tokens in/out,
+  out:in ratio, and context left, plus a fleet total. Present it to the user
+  and read it yourself:
+  - Out:in ratio is the efficiency signal — a low ratio (well under ~1%) means
+    the agent spent most tokens re-reading (polling loops, repeated file
+    reads, screenshot iterations) rather than producing work. Flag the worst
+    pane and, when the pane log shows an obvious cause, name it.
+  - Note outliers in duration and context-left as canary baselines for future
+    skill changes; comparing these tables across runs is how a skill edit is
+    judged (see the repo's canary workflow).
+  - Stats live in the pane scrollback, so harvest them while panes are open —
+    closing a pane destroys its numbers.
 - Keep panes open after completion: review feedback usually arrives later, and
   follow-ups to warm agents are cheap. Close panes only when the user confirms
   the work is fully done.

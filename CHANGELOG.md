@@ -25,3 +25,11 @@
     and late review-bot threads were missed.
   - Capture component-cropped screenshots from the first visual iteration.
   - Pre-warm worktree setup (install/build caches) before fanning out a fleet.
+
+## 2026-07-09 — fleet efficiency stats
+
+- fleet-orchestrator: added `scripts/fleet-stats.sh` and a mandatory
+  end-of-run efficiency report — per-agent duration, tokens in/out, out:in
+  ratio, and context left, harvested from agent TUI status lines before any
+  pane closes. Ratio is the polling-waste signal; tables double as canary
+  baselines for judging skill changes.
