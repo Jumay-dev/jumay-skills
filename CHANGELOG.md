@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-07-09 — fleet-orchestrator
+
+- Added `claude/fleet-orchestrator`: the orchestrator-side playbook distilled
+  from a real six-agent run — scope resolution, herdr grid spawn, dispatch,
+  event-driven monitoring (bundled `watch-fleet.sh`), independent verification
+  of agent claims (PR checks, unresolved review-thread counts), and warm-agent
+  follow-up dispatch.
+
 ## 2026-07-09 — initial import
 
 - Imported the working skill set as the version-control baseline, renamed

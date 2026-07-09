@@ -20,6 +20,7 @@ each landing a green PR in 25–55 minutes.
 | `codex/jumay-implementation-guardrails` | `$jumay-implementation-guardrails` | Code-quality guardrails (React Query boundaries, narrow types, design-level review fixes) |
 | `codex/jumay-review-message` | `$jumay-review-message` | Terse Slack review-request format |
 | `claude/herdr-agents` | `/herdr-agents` | Spawn and orchestrate agent fleets in [herdr](https://herdr.dev) panes |
+| `claude/fleet-orchestrator` | `/fleet-orchestrator` | Full orchestration loop: scope of tasks in, one agent per task, monitored and independently verified PRs out |
 
 ## Install
 
