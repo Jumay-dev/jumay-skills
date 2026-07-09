@@ -40,7 +40,10 @@ One self-contained prompt per agent, containing:
 - the exact task link,
 - the worker skill to use (`$<skill>` syntax for Codex),
 - isolation instruction (fresh worktree from the refreshed base),
-- done criteria (e.g. "one PR, visual gate >97", "checks green").
+- done criteria (e.g. "one PR, visual gate >97", "checks green"),
+- org context the worker skill leaves as placeholders: the GitHub `owner/repo`
+  and, when a handoff is expected, the review channel/reviewers. Published
+  skills are sanitized; the dispatch prompt is where real values enter.
 
 Send with `pane send-text` + `send-keys Enter`, then confirm every agent
 transitions to `working` before reporting dispatch complete.
