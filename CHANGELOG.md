@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-07-09 — jumay-parity efficiency optimizations
+
+- Applied the three skill-side optimization candidates from the initial
+  import (see PR #1 for the canary plan):
+  - Blocking waits over polling: `gh pr checks --watch` for CI, >=60s
+    field-scoped rechecks for review agents, new Efficiency Rules section.
+  - Post-final-CI thread closeout, machine-verified via a GraphQL
+    unresolved-thread count; `isOutdated` explicitly does not mean resolved.
+  - Evidence reuse: one Figma node export per ticket, component-scoped
+    screenshots from the first iteration, changed-stories-only re-captures.
+- Not applied here: pre-warm worktree setup — that is an orchestrator-side
+  concern (fleet-orchestrator), not a parity-skill rule.
+- Baseline to beat (six-ticket run, pre-optimization): 82.8M tokens in,
+  274.9K out, 0.33% ratio, 23-56 min per ticket, visual gates >=97.
+
 ## 2026-07-09 — fleet-orchestrator
 
 - Added `claude/fleet-orchestrator`: the orchestrator-side playbook distilled
