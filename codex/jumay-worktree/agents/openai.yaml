@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jumay Worktree"
+  short_description: "Clean worktree setup for new tasks"
+  default_prompt: "Use $jumay-worktree before starting a new ticket branch."

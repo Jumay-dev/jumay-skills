@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jumay Parity"
+  short_description: "Run design parity PR workflow"
+  default_prompt: "Use $jumay-parity to complete a UI component design parity ticket from Linear through PR review."

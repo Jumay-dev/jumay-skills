@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jumay Review Message"
+  short_description: "FE review Slack handoff format"
+  default_prompt: "Use $jumay-review-message to post a PR review request in Slack."

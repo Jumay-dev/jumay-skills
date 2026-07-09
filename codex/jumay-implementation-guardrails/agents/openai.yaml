@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jumay Implementation Guardrails"
+  short_description: "webapp implementation quality checklist."
+  default_prompt: "Use $jumay-implementation-guardrails before and during a webapp implementation."

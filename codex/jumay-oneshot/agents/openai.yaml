@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jumay Oneshot"
+  short_description: "Ticket to PR workflow with guardrails."
+  default_prompt: "Use $jumay-oneshot to solve a webapp ticket end to end."
