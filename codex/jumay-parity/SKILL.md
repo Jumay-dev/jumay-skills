@@ -414,6 +414,19 @@ output ratio), so:
        `GH_SESSION_TOKEN` before retrying. Do not create a repository branch or
        commit screenshots just to host review evidence unless the user
        explicitly approves that fallback.
+     - A `gh image` upload that fails with `step 0 (get upload token): repo
+       page returned 404` is almost never a tooling bug: `gh image
+       extract-token` returns the *default* browser session, and that account
+       may lack access to `OWNER/REPO`. Confirm with
+       `gh image check-token` — if the printed username is not repo-authorized,
+       the authorized account is signed in under a different browser profile.
+       Do not declare upload blocked on this 404. Instead obtain a token from
+       the authorized profile with `scripts/gh-image-token.sh`, which sweeps
+       the local Chrome profiles and prints the first live github.com session
+       `gh image check-token` accepts:
+       `TOKEN=$(scripts/gh-image-token.sh) && GH_SESSION_TOKEN="$TOKEN" gh image --repo OWNER/REPO <png-path>...`.
+       Only after the helper also fails to find any repo-authorized session is
+       the upload genuinely blocked on a credential the user must supply.
      - Treat a missing primary uploader as a normal fallback case, not as a
        blocker. Do not declare screenshot upload blocked until `gh image`
        installation, token extraction/check, and upload have all failed.
