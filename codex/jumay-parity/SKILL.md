@@ -159,6 +159,69 @@ Do not call the work complete until all applicable gates are true:
   rechecks; do not re-read the full PR in a tight loop. If it stays stale,
   explicitly state that the review is still pending.
 
+## Figma-Accurate Parity Gates
+
+A high Visual Ralph score means "the rendered pixels look close," which is not
+the same as "the component matches the design system." Image similarity cannot
+resolve exact token values at matrix scale (8px vs 12px radius, 1px vs 0.5px
+border, 16px vs 24px gaps), cannot see variant axes the story did not render,
+and cannot exercise behavior. These gates close those blind spots. They are
+additive: the visual/RMSE gate above still applies, and the work is complete
+only when the pixel gate and every gate below agree.
+
+- **Token-value audit (numeric, not pixel).** For every visible property, read
+  the exact Figma variable — `spacing`, `radius`, `border-width`, `shadow`,
+  `opacity`, fill/step, and type scale — from the node (via the Figma API/dev
+  mode, not by eye) and diff it against the value the code actually resolves to.
+  Assert the numbers match; do not accept a Tailwind token that is merely close
+  (`rounded-xl` 8px when Figma is `rounded-2xl` 12px, `border-b` 1px when the
+  node uses the 0.5px `border-width/border` token, a `-50` palette step when
+  Figma layers the status color at 5% over white, a hardcoded `--shadow-md`
+  when the node references a different shadow variable). Record each
+  property → figma-value → code-value → match in the ledger. Any mismatch caps
+  the score and keeps iterating, even when the screenshot passes.
+- **Variant-matrix coverage.** Enumerate the Figma component's full variant
+  axes and states (every `Variant`, `Size`, `State`, `Style` value in the node),
+  not only the ones the ticket's preview happens to show. For each cell, verify
+  it is both implemented and expressible through the component API. A component
+  that cannot represent a documented Figma variant (e.g. a media slot hardcoded
+  to one type, a number badge that cannot express its four axes) is a parity
+  miss even if the rendered example looks right. List the matrix in the ledger
+  with each cell marked covered or gap.
+- **Behavior and API parity (pixels cannot see this).** Verify component API
+  correctness, not just appearance: props/`style`/`ref`/`render` are merged and
+  forwarded (use the codebase's established `useRender` + `mergeProps` pattern,
+  never `cloneElement` that overwrites consumer props); interactive elements
+  render the correct element and role (a link renders an `<a>` with `href` and
+  is focusable, not a styled `<div>`); SSR/first paint is correct (watch for
+  `delay=0`-style flags that hide content until an effect runs); slot overrides
+  and disabled/loading states actually work; icons that must take a variable
+  color are not frozen (e.g. an `<img>`-loaded SVG cannot inherit `currentColor`).
+  Add story coverage for any new prop (such as `render`) so the behavior is
+  demonstrated and testable.
+- **Dark mode and full acceptance-criteria coverage are hard gates.** Capture
+  and verify both light and dark whenever the component or Figma source exposes
+  a theme; a value hardcoded to a light token (e.g. a literal light `--card`
+  color that `twMerge` lets win over `bg-card`) is a failure, not a nit. Cover
+  **every** Figma node listed in the ticket — if the issue names two targets,
+  implement both; a story or MDX note that silently narrows scope to one node
+  is a miss. Do not let partial coverage pass by scoring only the story that
+  was built.
+- **Evidence integrity.** Comparison images must be same-region and same-scale.
+  Reject a side-by-side whose two panels are rendered at different pixel
+  dimensions (it makes a mismatch invisible and overstates the score); crop or
+  scale both sources to the identical region before compositing, and state the
+  crop dimensions. The score is only trustworthy when it is measured against an
+  aligned baseline.
+- **Adversarial pre-submit review.** Before opening or marking the PR ready,
+  run one independent Figma-node-level review pass whose sole job is to find
+  deviations — spawn a subagent (or a fresh reasoning pass) that re-derives the
+  expected token values, variant matrix, and behavior from the Figma node and
+  the ticket, then tries to falsify the implementation the way a strict human
+  reviewer would. Treat what it finds as pre-PR work, not post-review cleanup.
+  This is the independent oracle the self-verifying capture loop otherwise
+  lacks; use it to convert would-be review comments into self-corrections.
+
 ## Efficiency Rules
 
 Waiting is free; polling is not. Every repeated status read re-loads large
