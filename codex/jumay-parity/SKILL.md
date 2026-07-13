@@ -222,6 +222,58 @@ only when the pixel gate and every gate below agree.
   This is the independent oracle the self-verifying capture loop otherwise
   lacks; use it to convert would-be review comments into self-corrections.
 
+## Review-Response and Evidence Discipline
+
+Most rework happens after review, not before. These rules govern how to respond
+to reviewer comments and keep evidence trustworthy. Follow them for every
+Greptile/Devin/human review round.
+
+- **Verify the reviewer's premise before changing anything.** A comment can be
+  wrong, and applying its suggestion blindly can regress a value that was
+  already correct (e.g. reverting an exact `bg-card` that already equalled the
+  Figma fill, or "fixing" a proportional value into a wrong one). Before editing
+  what a reviewer flags, re-derive the correct value from the Figma node. If the
+  code already matches, reply with the measured evidence and do not change it.
+  Reviewers sometimes retract their own numbers — confirm against the node, not
+  the prose.
+- **Regenerate and re-upload evidence from the final HEAD.** Any overlay,
+  screenshot, or comparison in the PR body must be captured from the current
+  head commit. After every code change — including a later commit that touches
+  the stories or component — regenerate the evidence and replace it in the body;
+  a stale overlay from an earlier commit is an invalid evidence. Before handoff,
+  confirm the evidence's capture commit equals HEAD. This is a hard gate: a
+  present-but-stale overlay fails it just as a missing one does.
+- **Measure residuals; never hand-wave "sub-pixel."** Before declaring a visible
+  delta acceptable browser-vs-Figma rasterization, measure it in pixels. A
+  residual above ~1-2px is a real gap to fix, not to excuse. State the measured
+  number in the ledger and PR. "Looks close" and "probably rendering" are not
+  valid dismissals.
+- **Text and number width parity; keep raster-fitting out of the primitive.**
+  Verify rendered text/number width against the Figma raster, not just the font
+  tokens (family/size/weight); right-aligned cells expose width drift. Any
+  compensation applied purely to make an overlay align (letter-spacing/tracking
+  tuned to a raster) belongs in the parity STORY, never in the shipped
+  component — the shipped component must match the Figma spec, not a screenshot.
+- **Synthesize conflicting review feedback; do not flip-flop.** When two
+  reviewers (or a reviewer and a bot) pull in opposite directions — e.g. one
+  says a base primitive's hover is too broad, another says removing it breaks
+  real consumers — implement the design that satisfies both concerns (here, an
+  explicit interactive variant that owns the hover while the base stays inert)
+  rather than reverting to whichever side commented last, which just re-triggers
+  the other. Reply on both threads explaining how each concern is met.
+- **Do not self-resolve a thread you reinterpreted; keep story-only state out of
+  production.** If you only partially address or reinterpret a reviewer's ask,
+  reply with your reasoning and leave the thread for the reviewer to resolve;
+  self-resolve only when you complied literally or proved the premise wrong.
+  Forced-state and tooling selectors that exist to drive Storybook (e.g.
+  `data-[state=...]` overrides) must live in the stories/tooling, never in the
+  shipped component's always-on class string, where they can permanently style
+  any product element carrying that attribute.
+- **After a merge, fix review feedback forward.** If the PR is already merged
+  when review feedback arrives, do not force-push the merged branch; open a
+  follow-up PR from a fresh branch with the fixes. Barrel/index export conflicts
+  from parallel parity PRs resolve as a union — keep every side's exports.
+
 ## Efficiency Rules
 
 Waiting is free; polling is not. Every repeated status read re-loads large
