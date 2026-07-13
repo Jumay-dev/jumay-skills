@@ -672,8 +672,8 @@ Slack-ready message, show it to the user, and send only after the user confirms
 that exact message. If the user asks for wording only, draft the text locally
 and do not send it.
 
-Default channel: your team's FE review channel (configure once, e.g.
-`<review-channel>`).
+Default channel: your team's FE review channel (configure once, stored in your
+local context, not in this repo).
 
 Default reviewer mentions for parity PRs (replace with your team's Slack user
 IDs):

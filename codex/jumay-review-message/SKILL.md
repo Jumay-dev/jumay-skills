@@ -1,6 +1,6 @@
 ---
 name: jumay-review-message
-description: FE review Slack handoff format. Use when posting or drafting a pull request review request to <review-channel>, especially after jumay-oneshot or jumay-parity work, to resolve reviewer mentions and post the terse current channel format.
+description: FE review Slack handoff format. Use when posting or drafting a pull request review request to your team's FE review channel, especially after jumay-oneshot or jumay-parity work, to resolve reviewer mentions and post the terse current channel format.
 ---
 
 # Jumay Review Message
@@ -11,7 +11,8 @@ Post concise FE review requests without rediscovering the channel format.
 
 ## Destination
 
-- Default channel: `<review-channel>`.
+- Default channel: your team's FE review channel, configured locally (not
+  stored in this repo).
 - Resolve the channel ID before posting if it is not already known.
 - Send directly when the user asks to post/leave a comment in Slack; draft only
   when the user explicitly asks for a draft.

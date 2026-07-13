@@ -26,7 +26,7 @@
 ## 2026-07-09 — initial import
 
 - Imported the working skill set as the version-control baseline, renamed
-  `the company-prefixed originals` → `jumay-*`, and removed company-specific values (org/repo names,
+  the company-prefixed originals → `jumay-*`, and removed company-specific values (org/repo names,
   ticket prefixes, Slack channel and user IDs, reviewer names, machine-local
   paths) in favor of documented placeholders.
 - `validate-pr-body.js`: the `owner/repo` argument is now required instead of
