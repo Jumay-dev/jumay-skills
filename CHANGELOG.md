@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-07-16 — jumay-figma-implement review-round hardening
+
+- Literal-grep gate now RE-RUNS on every fix round's diff, not just the
+  first gate. Motivation: a hardcoded scrim color (`bg-[#0b172b]`, invisible
+  overlay in dark mode) was added in a later fix round and shipped past a
+  gate that had already run.
+- New Phase-4 gate: public-API contract pass (callbacks fire on every
+  triggering path; no casts erasing required callback params; unsurprising
+  trigger/children semantics). Motivation: `onClose` fired only from the
+  close button, and a type cast hid a missing required Base UI event-details
+  argument — both caught by a human reviewer, not the pipeline.
+- New Phase-4 gate + Phase-3 dispatch line: primitive-library APIs before
+  hand-rolled interaction machinery (focus/dismissal/positioning).
+  Motivation: hand-rolled focus-modality tracking with a rAF blur() hack
+  duplicated Base UI's `initialFocus(openType)` and carried a stale-ref bug.
+- Human-reviewer etiquette in the review sweep: reply with fix + commit sha
+  on each human thread, never resolve them for the reviewer; sweep gate for
+  human rounds = 0 unresolved bot threads + replies posted + green checks.
+
 ## 2026-07-09 — jumay-parity efficiency optimizations
 
 - Applied the three skill-side optimization candidates from the initial
