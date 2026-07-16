@@ -227,8 +227,13 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
   (`herdr pane send-keys <id> Esc` — the key name is `Esc`, not `Escape`)
   and fold the new work into a consolidated batch. Waiting out checks on a
   head you are about to replace is pure waste: group all pending edits,
-  then do ONE close — one recapture, one signed amend + push, one
-  checks-wait, one review sweep — after the LAST change. Re-issue the
+  then do ONE close — one recapture, one signed commit + push, one
+  checks-wait, one review sweep — after the LAST change. Prefer APPENDING a
+  new commit over amend + force-push: plain pushes never invalidate a
+  reviewer's or bot's in-flight review state, keep the fix history auditable
+  against the review threads, and can't clobber the remote branch; squash at
+  merge if the repo wants one commit. Amend only when the repo's convention
+  explicitly demands a single-commit branch. Re-issue the
   standing constraints (commit hold if active, submodule ban, evidence
   rules) with the consolidated order, since the interrupted turn's context
   may be stale. Long-running agents COMPACT and forget standing orders —
@@ -237,7 +242,7 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
 - **User-QA gate before push (when requested).** If the user wants to test
   before committing: instruct the agent to implement + validate but leave
   the working tree uncommitted with the local workbench hot-reloading, wait
-  for the user's explicit go, and only then amend/push. New feedback during
+  for the user's explicit go, and only then commit + push. New feedback during
   the QA window folds into the same held batch.
 - Waiting: `herdr wait agent-status --status idle` fires on between-turn
   blips. Use a debounce loop — require idle to hold across two 180s checks —
@@ -245,7 +250,7 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
 - GPG/smartcard signing: if an agent reports pinentry cancelled /
   unverified signatures, trigger `echo test | gpg --clearsign -u <key>` from
   the orchestrator to pop pinentry for the user, then tell the agent to
-  re-amend. Cache TTL is short — expect re-prompts on long runs.
+  re-commit (signed). Cache TTL is short — expect re-prompts on long runs.
 
 ## Failure playbook (evidence)
 
