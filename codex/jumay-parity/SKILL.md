@@ -53,7 +53,17 @@ Do not call the work complete until all applicable gates are true:
   score, and evidence paths.
 - PR body follows the established parity format used by prior
   parity PRs: `Linear issue`, `## Summary`, one three-column `## Visual
-  evidence` screenshot table, `Visual gate: N/100`, and `## Validation`. The
+  evidence` screenshot table, `Visual gate: N/100`, a compact list of
+  intentional deviations from the design (with the decision/reason for
+  each), and `## Validation`. The body must read like something a human
+  reviewer wants to read: `## Summary` is plain-English prose (what the
+  component is, what it does, notable decisions), and `## Validation` is
+  4-6 short bullets naming what was validated (typecheck, lint, test suite
+  with count, build, interaction flows, visual gate) — never command
+  dumps. Machine-generated process proof (token/CSS-variable audit tables,
+  focus-ring evidence subsections, capture diagnostics, command output)
+  belongs in the ledger artifacts under `.omx/artifacts/`, NOT in the PR
+  body. The
   screenshot table must have exactly `Figma`, `Before`, and `After` columns:
   exact Figma component screenshot, Storybook before screenshot, and Storybook
   after screenshot. Every `Before` cell must include an uploaded rendered image;
