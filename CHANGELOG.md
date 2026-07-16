@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-07-16 — jumay-parity PR-body quality gate
+
+- PR body gate now requires: a compact list of intentional design
+  deviations (decision/reason each), `## Summary` as plain-English prose,
+  and `## Validation` as 4-6 short bullets naming what was validated —
+  never command dumps.
+- Machine-generated process proof (token/CSS-variable audit tables,
+  focus-ring evidence, capture diagnostics, command output) moves to the
+  ledger artifacts under `.omx/artifacts/`, not the PR body. Motivation:
+  reviewers were skipping bloated auto-generated bodies; the human-readable
+  format came out of a six-fix-round session where the deviations list was
+  what reviewers actually asked about.
+
 ## 2026-07-09 — jumay-parity efficiency optimizations
 
 - Applied the three skill-side optimization candidates from the initial
