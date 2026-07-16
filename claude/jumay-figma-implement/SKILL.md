@@ -136,10 +136,20 @@ dismissal, and positioning, use the primitive library's own APIs before
 hand-rolling any machinery". The verifier owns the PR so evidence and parity
 fixes live in one reviewable place.
 
+If work happens in a fresh git worktree and the repo has submodules,
+INITIALIZE the submodules in the worktree before any dependency change
+(`git submodule update --init`) even though they must never be staged: with
+empty submodule dirs, a workspace package manager silently PRUNES their
+importers from the lockfile — a 30k-line rewrite that breaks every other
+checkout — and the trap stays invisible until the first real dep addition.
+
 Exit gate (orchestrator, independently): branch exists with the commit;
 `git show --stat` matches the files-to-create list; validation commands the
 agent claims passed actually pass (spot-run at least typecheck); no
-submodule or artifact dirs staged.
+submodule or artifact dirs staged. Verify command outcomes by EXIT CODE,
+never by grepping their output: colored output puts ANSI codes between words
+("error TS" never matches), and "no output through my grep" reads as green
+while the command failed — both produced false-green gates in real runs.
 
 ## Phase 4 — VERIFY (Codex pane, verifier skill)
 
@@ -291,6 +301,13 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
   verdict for single-strike glyph deltas — any doubled line must be measured
   (Figma metadata y vs DOM y) and the whole gap chain re-derived from Figma,
   not re-balanced with new literals.
+- **Mid-animation capture**: drift is worst at the component's outer edges
+  (full-width rows doubled at both extremes, corners, borders) and near-zero
+  at the center — the screenshot fired during an enter animation (scale/zoom
+  transitions on dialogs/popovers). Await animation completion on the target
+  subtree (`getAnimations({subtree:true})` all finished) AND
+  `document.fonts.ready` before every capture — or gate a reduced-motion
+  override on `navigator.webdriver` so only capture browsers skip animations.
 - **Forced states leaking to users**: parity stories that force hover/focus
   must scope injected CSS to a per-story instance attribute AND gate on
   `navigator.webdriver` so only capture browsers see them.

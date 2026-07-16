@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-07-16 — jumay-figma-implement: lockfile, gate, and capture lessons
+
+- Worktree submodule rule: initialize submodules in fresh worktrees before
+  any dependency change — empty submodule dirs make the package manager
+  silently prune their lockfile importers (observed: 29k-line rewrite).
+- Exit-code gates: verify command outcomes by exit code, never by grepping
+  (possibly colored) output — two real false-green gates came from ANSI
+  codes breaking the grep pattern and from empty-grep-reads-as-green.
+- Failure playbook: mid-animation capture signature (edge-heavy doubling,
+  clean center) — await subtree animations + document.fonts.ready before
+  capture, or gate reduced-motion on navigator.webdriver.
+
 ## 2026-07-16 — jumay-figma-implement review-round hardening
 
 - Literal-grep gate now RE-RUNS on every fix round's diff, not just the
