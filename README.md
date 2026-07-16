@@ -21,6 +21,7 @@ each landing a green PR in 25–55 minutes.
 | `codex/jumay-review-message` | `$jumay-review-message` | Terse Slack review-request format |
 | `claude/herdr-agents` | `/herdr-agents` | Spawn and orchestrate agent fleets in [herdr](https://herdr.dev) panes |
 | `claude/fleet-orchestrator` | `/fleet-orchestrator` | Full orchestration loop: scope of tasks in, one agent per task, monitored and independently verified PRs out |
+| `claude/jumay-figma-implement` | `/jumay-figma-implement` | Figma pointer → merged-ready PR via a five-phase pipeline (investigate → interview → execute → verify → close), orchestrator-verified at every gate |
 
 ## Install
 
