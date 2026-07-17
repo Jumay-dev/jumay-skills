@@ -213,8 +213,30 @@ agent's summary:
   (Base UI/Radix/etc.), check the library's own API first — it almost always
   has the hook (e.g. modality-aware `initialFocus`), and the hand-rolled
   version is where stale refs and a11y bugs live.
+- Dialogs/popovers must have a programmatic accessible name: assert
+  `getByRole("dialog", { name: <title> })` in a test. Visible headings that
+  aren't registered through the primitive's Title/Description components
+  leave the dialog unnamed for screen readers, and no visual gate ever
+  catches it.
+- Reviewer suggestions are changes like any other: verify them with the same
+  rigor before applying. A "this class is redundant" nit can be wrong — a
+  wrapper's base class may make the override load-bearing — and applying it
+  blindly regresses pixels that only the next recapture catches. When an
+  override survives a redundancy claim, document why inline.
 - Drive the deployed/local component workbench with a headless browser
   (the browse skill) for user-reported behaviors (hover, keyboard, scroll).
+
+## Phase 4.5 — FRESH-EYES REVIEW (optional, recommended before close)
+
+Accumulated context blinds every long-running participant — orchestrator,
+executor, verifier, even the human reviewer engaging thread-by-thread. Spawn
+one NEW agent with ZERO prior context (fresh pane, read-only contract, report
+file as deliverable) to review the final branch diff with two mandated
+lenses: (1) a11y roles/names, and (2) "what will the NEXT consumer of this
+API hit first." In one real run this phase found a HIGH (unnamed dialog) and
+an API-adequacy blocker that four verification rounds and three human review
+rounds all missed. Gate its completion on the report file existing, not on
+the pane going idle.
 
 ## Phase 5 — CLOSE
 
@@ -245,6 +267,28 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
   ("X COMPLETE <artifact>"); on idle, check for the marker first — if absent,
   read the pane tail for API errors and resume with "continue" (the session
   context survives; re-state any retargets in the resume message).
+- Marker ≠ work: a compacted agent can print the completion marker WITHOUT
+  doing the task (observed: "COMPLETE 99/100" over hour-old artifacts).
+  Pair every marker with orchestrator-verifiable proof-of-work, and know the
+  hierarchy: markers and mtimes are hints (agents can and did "normalize"
+  mtimes to satisfy a check); CONTENT is the only unfakeable evidence —
+  re-open the artifact and compare against the previous accepted round.
+  Gate background monitors on the deliverable existing, not on pane idleness.
+- EVERY multi-step order goes to a scratchpad file, not just Phase-1 briefs —
+  the pane gets one line: "Read <file> and execute it." Files survive
+  compaction; pasted instructions don't (a mid-task compaction dropped a
+  pasted recapture order and produced the fake-marker incident above).
+- Never chain publish steps (thread replies, PR comments, body edits) behind
+  a gating command in one shell line. `git commit … | tail` reports the
+  PIPE's exit code — a failed commit sailed through `&&` and posted a
+  wrong-sha reply, twice. Use `set -o pipefail`, verify the commit/push
+  landed as its own step, and never interpolate `git rev-parse HEAD` into a
+  message before the commit is confirmed.
+- A listening port is not your server: dev servers die and other agents'
+  servers take over the port silently (an FE-xxx worktree's Storybook
+  answered on the "user QA" port and poisoned two headless checks). Before
+  any capture or QA against a local port, verify identity — the listening
+  PID's cwd (lsof) or content (`index.json` contains your story IDs).
 - If the user is manually QA-ing on a local dev server, name its port in
   EVERY dispatch with "do not kill port <N>" and give the verifier its own
   capture port — agents cleaning up "their" servers otherwise kill the
@@ -283,7 +327,11 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
 - GPG/smartcard signing: if an agent reports pinentry cancelled /
   unverified signatures, trigger `echo test | gpg --clearsign -u <key>` from
   the orchestrator to pop pinentry for the user, then tell the agent to
-  re-commit (signed). Cache TTL is short — expect re-prompts on long runs.
+  re-commit (signed). Cache TTL is short — expect re-prompts on long runs,
+  warm the cache immediately before every commit step, and VERIFY the warm
+  itself succeeded (check its exit code and tell the user a prompt is
+  waiting) — a silently-failed warm followed by a piped commit is how the
+  wrong-sha-reply incident chained.
 
 ## Failure playbook (evidence)
 
@@ -308,6 +356,13 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
   subtree (`getAnimations({subtree:true})` all finished) AND
   `document.fonts.ready` before every capture — or gate a reduced-motion
   override on `navigator.webdriver` so only capture browsers skip animations.
+- **Portal-hosted parity targets**: when packaging moves the component into a
+  dialog/popover, the target renders in a PORTAL outside the story wrapper —
+  capture the component element itself (its `data-slot`), not the wrapper.
+  With `defaultOpen`, the primitive focuses the first tabbable element
+  programmatically on load, which counts as `:focus-visible` — a focus ring
+  appears in captures that real pointer users never see. Blur the active
+  element before the screenshot; capture-only, never a code change.
 - **Forced states leaking to users**: parity stories that force hover/focus
   must scope injected CSS to a per-story instance attribute AND gate on
   `navigator.webdriver` so only capture browsers see them.

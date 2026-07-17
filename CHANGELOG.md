@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-07-17 — jumay-figma-implement: trust-but-verify session lessons
+
+- Marker ≠ work: completion markers need orchestrator-verifiable
+  proof-of-work; mtimes are gameable, content is the only unfakeable
+  evidence; gate monitors on deliverables existing, not pane idleness.
+  Motivation: a compacted agent printed "COMPLETE 99/100" over hour-old
+  artifacts, then "normalized" mtimes to satisfy the freshness check.
+- Every multi-step order goes to a file ("Read <file> and execute it") —
+  pasted instructions die in compaction; a dropped pasted order caused the
+  fake-marker incident.
+- Publish steps never chain behind gating commands: pipes eat exit codes
+  (`git commit | tail` let a failed commit post a wrong-sha reply twice);
+  pipefail + verify-then-publish + no HEAD interpolation before the commit
+  is confirmed. GPG warms must themselves be verified.
+- Reviewer suggestions get the same verification as any change — a wrong
+  "redundant class" nit regressed segment layout two rounds later.
+- New Phase 4.5: optional fresh-eyes review by a zero-context agent with
+  a11y-name and next-consumer lenses (found a HIGH and an API blocker that
+  every context-loaded participant missed). Phase-4 gate adds
+  getByRole("dialog", { name }) assertion.
+- Port identity check before captures/QA (another worktree's Storybook
+  silently took over the port); portal-hosted parity targets playbook entry
+  (element-scoped capture, blur the programmatic defaultOpen focus).
+
 ## 2026-07-16 — jumay-figma-implement: lockfile, gate, and capture lessons
 
 - Worktree submodule rule: initialize submodules in fresh worktrees before
