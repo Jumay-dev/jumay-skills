@@ -55,6 +55,37 @@
   on each human thread, never resolve them for the reviewer; sweep gate for
   human rounds = 0 unresolved bot threads + replies posted + green checks.
 
+## 2026-07-16 — jumay-figma-implement
+
+- Added `claude/jumay-figma-implement` (PR #2): five-phase Figma-to-PR
+  pipeline (investigate → interview → execute → verify → close) with
+  orchestrator-side exit gates at every phase. Distilled from a full
+  production run (spec → interview → implementation → six verify/fix
+  rounds → merge-ready PR).
+- Hardening baked in from that run's failures: in-context usage walk +
+  visual-claim provenance (packaging churn: content → popover → modal);
+  container-semantics and interaction-story interview questions;
+  protective-default recommendation bias for consent controls;
+  computed-CSS and compensated-drift verification gates (matching outer
+  dims hid a wrong-gap chain; malformed utility variants no-op silently);
+  dispatch-landed / idle-vs-done / agent-alive pane mechanics.
+- Rule: prefer appending commits over amend + force-push during review
+  loops; squash at merge if the repo wants one commit.
+
+## 2026-07-16 — jumay-parity PR-body quality gate
+
+- PR body gate now requires: a compact list of intentional design
+  deviations (decision/reason each), `## Summary` as plain-English prose,
+  and `## Validation` as 4-6 short bullets naming what was validated —
+  never command dumps.
+- Machine-generated process proof (token/CSS-variable audit tables,
+  focus-ring evidence, capture diagnostics, command output) moves to the
+  ledger artifacts under `.omx/artifacts/`, not the PR body. Motivation:
+  reviewers were skipping bloated auto-generated bodies; the human-readable
+  format came out of a six-fix-round session where the deviations list was
+  what reviewers actually asked about.
+
+
 ## 2026-07-09 — jumay-parity efficiency optimizations
 
 - Applied the three skill-side optimization candidates from the initial
