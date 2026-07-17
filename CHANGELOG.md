@@ -1,5 +1,36 @@
 # Changelog
 
+## 2026-07-16 — jumay-figma-implement: lockfile, gate, and capture lessons
+
+- Worktree submodule rule: initialize submodules in fresh worktrees before
+  any dependency change — empty submodule dirs make the package manager
+  silently prune their lockfile importers (observed: 29k-line rewrite).
+- Exit-code gates: verify command outcomes by exit code, never by grepping
+  (possibly colored) output — two real false-green gates came from ANSI
+  codes breaking the grep pattern and from empty-grep-reads-as-green.
+- Failure playbook: mid-animation capture signature (edge-heavy doubling,
+  clean center) — await subtree animations + document.fonts.ready before
+  capture, or gate reduced-motion on navigator.webdriver.
+
+## 2026-07-16 — jumay-figma-implement review-round hardening
+
+- Literal-grep gate now RE-RUNS on every fix round's diff, not just the
+  first gate. Motivation: a hardcoded scrim color (`bg-[#0b172b]`, invisible
+  overlay in dark mode) was added in a later fix round and shipped past a
+  gate that had already run.
+- New Phase-4 gate: public-API contract pass (callbacks fire on every
+  triggering path; no casts erasing required callback params; unsurprising
+  trigger/children semantics). Motivation: `onClose` fired only from the
+  close button, and a type cast hid a missing required Base UI event-details
+  argument — both caught by a human reviewer, not the pipeline.
+- New Phase-4 gate + Phase-3 dispatch line: primitive-library APIs before
+  hand-rolled interaction machinery (focus/dismissal/positioning).
+  Motivation: hand-rolled focus-modality tracking with a rAF blur() hack
+  duplicated Base UI's `initialFocus(openType)` and carried a stale-ref bug.
+- Human-reviewer etiquette in the review sweep: reply with fix + commit sha
+  on each human thread, never resolve them for the reviewer; sweep gate for
+  human rounds = 0 unresolved bot threads + replies posted + green checks.
+
 ## 2026-07-16 — jumay-figma-implement
 
 - Added `claude/jumay-figma-implement` (PR #2): five-phase Figma-to-PR
@@ -16,6 +47,20 @@
   dispatch-landed / idle-vs-done / agent-alive pane mechanics.
 - Rule: prefer appending commits over amend + force-push during review
   loops; squash at merge if the repo wants one commit.
+
+## 2026-07-16 — jumay-parity PR-body quality gate
+
+- PR body gate now requires: a compact list of intentional design
+  deviations (decision/reason each), `## Summary` as plain-English prose,
+  and `## Validation` as 4-6 short bullets naming what was validated —
+  never command dumps.
+- Machine-generated process proof (token/CSS-variable audit tables,
+  focus-ring evidence, capture diagnostics, command output) moves to the
+  ledger artifacts under `.omx/artifacts/`, not the PR body. Motivation:
+  reviewers were skipping bloated auto-generated bodies; the human-readable
+  format came out of a six-fix-round session where the deviations list was
+  what reviewers actually asked about.
+
 
 ## 2026-07-09 — jumay-parity efficiency optimizations
 

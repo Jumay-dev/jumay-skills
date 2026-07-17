@@ -131,13 +131,25 @@ Exit gate: user has answered; spec updated.
 
 Spawn `codex --yolo` pane, label `<ticket>-exec`, dispatch: spec path +
 "implement exactly, run all validation commands until clean, commit on the
-branch, do NOT create a PR" + the submodule ban. The verifier owns the PR so
-evidence and parity fixes live in one reviewable place.
+branch, do NOT create a PR" + the submodule ban + "for focus management,
+dismissal, and positioning, use the primitive library's own APIs before
+hand-rolling any machinery". The verifier owns the PR so evidence and parity
+fixes live in one reviewable place.
+
+If work happens in a fresh git worktree and the repo has submodules,
+INITIALIZE the submodules in the worktree before any dependency change
+(`git submodule update --init`) even though they must never be staged: with
+empty submodule dirs, a workspace package manager silently PRUNES their
+importers from the lockfile — a 30k-line rewrite that breaks every other
+checkout — and the trap stays invisible until the first real dep addition.
 
 Exit gate (orchestrator, independently): branch exists with the commit;
 `git show --stat` matches the files-to-create list; validation commands the
 agent claims passed actually pass (spot-run at least typecheck); no
-submodule or artifact dirs staged.
+submodule or artifact dirs staged. Verify command outcomes by EXIT CODE,
+never by grepping their output: colored output puts ANSI codes between words
+("error TS" never matches), and "no output through my grep" reads as green
+while the command failed — both produced false-green gates in real runs.
 
 ## Phase 4 — VERIFY (Codex pane, verifier skill)
 
@@ -151,6 +163,12 @@ Then run the review sweep until done: all automated review-agent threads
 (Greptile, Devin, or whatever bots the repo uses) across all heads
 fixed-or-justified and resolved, fresh review on the final head,
 unresolved thread count 0.
+
+HUMAN reviewer threads follow different etiquette: fix, then REPLY on each
+thread with what changed + the fixing commit sha — never resolve a human's
+threads for them. For human-review rounds the sweep gate becomes: 0
+unresolved BOT threads, a reply posted on every human thread, checks green
+on the final head; the human resolves and re-approves on their own time.
 
 Exit gate — orchestrator verifies with own eyes/commands, never from the
 agent's summary:
@@ -179,7 +197,22 @@ agent's summary:
   values (`bg-[#…]`, `rounded-[Npx]`, shadow/duration literals) — every one
   must either map to a design token / CSS variable or carry a one-line
   no-token-exists justification. Component-specific geometry from the
-  design (fixed widths/heights) may stay literal.
+  design (fixed widths/heights) may stay literal. RE-RUN this grep on every
+  fix round's new diff, not just the first gate — later rounds introduce new
+  surfaces (overlays, wrappers) and a literal added in round N sails past a
+  gate that only ran in round 1 (a hardcoded scrim color that was invisible
+  in dark mode shipped exactly this way).
+- Public-API contract pass — read the new component's exported props as a
+  consumer would: every lifecycle callback fires on EVERY path that triggers
+  it (an `onClose` that fires from the close button but not Escape/backdrop
+  is a trap); no type casts that erase required callback parameters (they
+  surface as consumer-side runtime crashes the stories never hit);
+  children/trigger/slot semantics match ecosystem expectations.
+- Hand-rolled interaction machinery is a smell: if the diff implements focus
+  management, dismissal, or positioning around a primitive library
+  (Base UI/Radix/etc.), check the library's own API first — it almost always
+  has the hook (e.g. modality-aware `initialFocus`), and the hand-rolled
+  version is where stale refs and a11y bugs live.
 - Drive the deployed/local component workbench with a headless browser
   (the browse skill) for user-reported behaviors (hover, keyboard, scroll).
 
@@ -268,6 +301,13 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
   verdict for single-strike glyph deltas — any doubled line must be measured
   (Figma metadata y vs DOM y) and the whole gap chain re-derived from Figma,
   not re-balanced with new literals.
+- **Mid-animation capture**: drift is worst at the component's outer edges
+  (full-width rows doubled at both extremes, corners, borders) and near-zero
+  at the center — the screenshot fired during an enter animation (scale/zoom
+  transitions on dialogs/popovers). Await animation completion on the target
+  subtree (`getAnimations({subtree:true})` all finished) AND
+  `document.fonts.ready` before every capture — or gate a reduced-motion
+  override on `navigator.webdriver` so only capture browsers skip animations.
 - **Forced states leaking to users**: parity stories that force hover/focus
   must scope injected CSS to a per-story instance attribute AND gate on
   `navigator.webdriver` so only capture browsers see them.
