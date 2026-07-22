@@ -45,6 +45,23 @@ Do not call the work complete until all applicable gates are true:
   state that limitation in the PR.
 - Playwright headless verifies the changed stories, states, visible content, and
   dark-mode rendering.
+- Interactive and un-baked states are exercised and verified, not just the state
+  the Figma frame happens to show. Figma frames almost always bake ONE state (a
+  toggle OFF, an input at a static value, tab A, a collapsed expander); the
+  states the frame does NOT show are the #1 source of escaped defects. For every
+  interactive control the component exposes — switches (on/off), Max/Half and
+  other computed-value actions, tabs, expanders/accordions, custom-input fields,
+  consent gates, hover/focus where designed — drive it into that state and verify
+  BOTH the computed CSS/geometry (e.g. a switch thumb's right edge stays inside
+  the track when ON) AND the resulting value formatting (e.g. a Max-filled amount
+  is clamped to token decimals, not raw float precision), in light and dark.
+  Capture the non-default states as evidence, not only the frame's baked state.
+- Reused kit/design-system or shared components are re-verified against their
+  Figma component spec in the exact states and props this feature uses — never
+  assume "reused == correct" — including dark mode and any local className
+  overrides. A className geometry override (width/translate/radius) layered on a
+  variant/size prop can silently win or lose a CSS-specificity fight and break the
+  active state; verify the computed CSS in the resting AND active state.
 - At least one human/vision inspection pass has opened the Figma screenshot and
   the Storybook After screenshot side by side after the final code change. DOM
   geometry, dimensions, and automated verdicts are supporting evidence, not a
@@ -80,8 +97,17 @@ Do not call the work complete until all applicable gates are true:
   that is misleading. Prefer a simple tinted overlay with Figma in magenta,
   Storybook after in cyan, and overlap in purple; mask white/transparent
   backgrounds when needed so the whole canvas does not become a false overlap.
+  **Build overlays at 3x device scale (~300ppi), never at 1x**: capture the
+  Storybook side with deviceScaleFactor 3 (`browse viewport WxH --scale 3`),
+  take the Figma side as the native-size export upscaled 3x with Lanczos
+  (`magick figma.png -filter Lanczos -resize 300% ...`), and composite at the
+  common 3x pixel dimensions. At 1x most visible fringe is antialiasing noise;
+  at 3x antialiasing shrinks relative to real deltas, so genuine mismatches
+  separate cleanly from raster artifacts and need far less judgment-call
+  classification (proven pattern: kmono PR #325).
   Use a heatmap/diff if that is clearer for the component. State the exact crop
-  or alignment in one short sentence, for example `same 290x215 content crop`.
+  or alignment plus the scale in one short sentence, for example
+  `same 290x215 content crop @300ppi (Figma 3x lanczos, capture dSF 3)`.
   If no same-region comparison can be produced, label the image as approximate
   and do not use it as evidence for increasing the visual score.
 - For matrices, multi-row examples, or state collections, prefer
