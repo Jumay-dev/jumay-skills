@@ -57,6 +57,31 @@ Use this for non-trivial webapp implementation work, including direct coding tas
    - If a change looks unrelated to the feature, either remove it or document why it is required.
    - Prefer deletion and restoration of existing shape over adding compatibility layers.
 
+12. Reuse a kit/design-system component's own size/variant PROPS; do not layer className geometry that fights them.
+   - Prefer `<Switch size="sm">` over `<Switch className="w-7 ...translate-x-3">`. A className width/translate/radius override stacked on a variant/size class can silently win or lose a CSS-specificity fight, leaving inconsistent geometry (e.g. a switch thumb that overshoots its track only when ON).
+   - If you genuinely must override geometry, verify the computed CSS in BOTH the resting and the active state — not just the state the Figma frame bakes.
+   - When reusing a shared component, confirm it already matches its Figma spec in the states/props you use (incl. dark mode) before assuming reuse == correct.
+
+13. Round computed numeric values to their domain precision before display or entry.
+   - Any token amount fed into an input (Max, Half, or a price-derived amount) must be clamped to the token's decimals with the existing repo pattern: `value.toDecimalPlaces(token.decimals, Decimal.ROUND_DOWN)` (see lend DepositForm/WithdrawForm). Never pass a raw `Decimal.div()`/`.mul()` result straight to a value — it carries full float precision (e.g. Max showing `8790.2678571428571429`).
+   - Cover the interactive handlers that produce these values (onMax/onHalf/derived amounts) with a play() story or unit assertion — the default static story never exercises them.
+
+14. Make every public export earn its place.
+   - Export a symbol only when another module or package imports it. Keep feature internals private and avoid speculative barrel exports.
+   - Before committing, audit new exports and remove those without real consumers. Use the repository's unused-export tooling when available.
+
+15. Require adapters and transforms to change something meaningful.
+   - An adapter should validate, normalize, change representation, or bridge a documented incompatible type boundary.
+   - Delete identity wrappers and broad casts that merely rename already-compatible SDK or application values. Use the typed value directly instead.
+
+16. Keep domain normalization separate from generic unit conversion.
+   - Apply reserve multipliers, exchange rates, scaling factors, and other domain policy at the owning feature boundary.
+   - Then call the canonical SDK or shared unit-conversion utility. Do not hide both responsibilities in one generic-sounding helper.
+
+17. Search existing dependencies and shared utilities before writing collection helpers.
+   - Prefer an already-installed, canonical utility such as `es-toolkit` for deduplication, compaction, grouping, and similar generic operations.
+   - Add a local helper only when it owns domain semantics beyond the generic collection operation.
+
 ## Self-Review Checklist
 
 Before committing, answer these in your own head and fix any weak answer:
@@ -69,4 +94,10 @@ Before committing, answer these in your own head and fix any weak answer:
 - Are single-mint `useTokens` calls written directly instead of routed through aggregate compaction helpers?
 - Is optionality handled at the loading caller, not hidden in helpers?
 - Did I reuse SDK/object fields instead of recomputing or fallback-searching?
+- Did I reuse the component's size/variant props instead of fighting them with className geometry — and verify the ACTIVE state (toggle on, tab switched), not just the state the Figma frame bakes?
+- Are computed numeric values (Max/Half/derived amounts) clamped to domain precision (token decimals, ROUND_DOWN) and covered by a handler-exercising test?
+- Does every new export have a real external consumer?
+- Does every new adapter perform validation, normalization, representation change, or a documented type bridge?
+- Are domain scaling and generic unit conversion separate, with the canonical converter reused?
+- Did I search shared code and installed dependencies before adding a generic collection helper?
 - Did tests cover the behavior that could regress, not just the implementation detail?
