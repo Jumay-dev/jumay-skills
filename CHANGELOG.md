@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-07-29 — jumay-herdr-review: multi-target reviewer panels
+
+- New `claude/jumay-herdr-review`: one Claude+Codex pane pair per target, all
+  pairs reviewing at once (N targets never queue through one pair). Each pane
+  then rules AGREE/DISAGREE on the findings the other caught but it missed, so
+  cross-model disagreement gets a real second-model verdict instead of only the
+  orchestrator's read.
+- Review-skill split, documented on both sides: `jumay-dual-review` is the
+  single-target, no-herdr path; `jumay-herdr-review` is multi-target panes you
+  can dig into afterward. Both bind `docs/quality-gate.md` rather than
+  restating rules.
+- The gate is wired into the panel, not bolted on: G3 merge-base preflight runs
+  BEFORE dispatch and ships in the brief (otherwise every pane re-reports
+  stale-base deletions), G9–G15 ride as explicit review lenses, and the report
+  ends in a G8 routing plan plus a G4 regression pass. Orchestrator
+  verification (G7) sits between the panes' findings and the user — pane
+  self-reports are never forwarded raw.
+- Deliverables are idempotent tmp+mv overwrites, never appends: that is what
+  makes the `dispatch` retry safe, and an append is readable half-finished the
+  moment its first line lands.
+
 ## 2026-07-29 — herdr 0.7 migration: pane skills rewritten, dispatch hardened
 
 - herdr 0.6.8 → 0.7.5 removed the top-level `herdr wait` command and dropped
