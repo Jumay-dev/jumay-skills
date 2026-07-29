@@ -58,16 +58,24 @@ but it must be someone/something that did not write the fix.
 - Origin: two watcher false-positives in one day from prompt echoes (kmono
   FE-879 cycle).
 
-## G6 — Pane protocol (herdr)
+## G6 — Pane protocol (herdr >= 0.7)
 - Relocate panes BY LABEL immediately before every send; pane IDs renumber when
-  any pane closes.
-- After launching an agent CLI, verify the agent is detected and idle before
-  dispatching (auto-update exits drop the pane to a shell; text then goes to
-  the shell).
-- Codex TUIs may need a second Enter when idle; confirm status flips to
-  `working` (or token counters move) after every dispatch.
+  any pane closes, and the id FORMAT changes between versions (`w<ws>-N` in
+  0.6.x, `w<ws>:p<N>` in 0.7.5) — always parse ids from JSON, never grep a shape.
+- Launch with `agent start --kind <k> --pane <id>`, which blocks until the agent
+  is detected and ready. Retry `agent_pane_busy` (a just-split pane has no shell
+  prompt yet); any other failure means NO agent in that pane — never dispatch
+  into it.
+- **A dispatch that reports success may not have landed.** `agent prompt --wait
+  --until working` returns rc=0 even when an agent still booting (MCP servers,
+  auth) silently swallowed the prompt. Confirm INTAKE after every dispatch — the
+  input-token counter must move (`0 in` = nothing received) — then gate
+  completion on the deliverable file, never on pane idleness.
 - Origin: watcher attached to a renumbered pane id reported a healthy agent as
-  gone; codex auto-update swallowed a dispatch (same cycle).
+  gone; codex auto-update swallowed a dispatch (FE-879 cycle). On the 0.7.5
+  migration, a dispatch into a still-booting codex returned success with the
+  composer empty at `0 in · 0 out` — the friendlier API moved the silent-drop
+  failure from Enter-handling to readiness, it did not remove it.
 
 ## G7 — Verify-before-report
 Agent self-reports are never accepted bare. Before closing any task the
