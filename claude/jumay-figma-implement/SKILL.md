@@ -225,6 +225,21 @@ agent's summary:
   override survives a redundancy claim, document why inline.
 - Drive the deployed/local component workbench with a headless browser
   (the browse skill) for user-reported behaviors (hover, keyboard, scroll).
+- Proactively exercise EVERY interactive/un-baked state before the user does —
+  do not wait for a bug report. Figma frames almost always bake exactly one
+  state (a toggle OFF, an input at a static value, tab A, a collapsed expander);
+  the un-baked states are where defects escape (this pipeline shipped a switch
+  thumb that overshot its track only when ON, and a Max button that filled 16
+  decimal places — both invisible in the default frame). For each control,
+  drive it into its other states and verify computed CSS/geometry AND value
+  formatting, both themes. Confirm the verifier captured these non-default
+  states as evidence, not just the frame's baked state.
+- Any REUSED kit/shared component must be re-verified against its Figma spec in
+  the states/props this feature uses (incl. dark mode and any className
+  overrides) — "reused == correct" is a false assumption (a reused input chip
+  shipped with the wrong radius + a missing dark-mode fill; a reused Switch broke
+  because a className width/translate override fought its size prop). Grep the
+  diff for className geometry layered on a kit variant/size prop.
 
 ## Phase 4.5 — FRESH-EYES REVIEW (optional, recommended before close)
 
