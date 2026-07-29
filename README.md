@@ -24,7 +24,8 @@ each landing a green PR in 25–55 minutes.
 | `claude/jumay-figma-implement` | `/jumay-figma-implement` | Figma pointer → merged-ready PR via a five-phase pipeline (investigate → interview → execute → verify → close), orchestrator-verified at every gate |
 | `claude/jumay-dual-review` | `/jumay-dual-review` | Single-target dual-engine review (Claude subagent + Codex CLI in parallel), verified against the quality gate and routed per the stacked-PR convention |
 | `claude/jumay-herdr-review` | `/jumay-herdr-review` | Multi-target review panel: a Claude+Codex pane pair per PR/branch, each ruling on the other's blind spots, converged into one verified report per target |
-| `docs/quality-gate.md` | — | G1–G15 orchestrator invariants and review lenses shared by the review and implement skills |
+| `claude/jumay-quality-gate` | `/jumay-quality-gate` | Post-implementation gate: proves or disproves an executor's completion claims with the orchestrator's own commands, then routes fixes |
+| `docs/quality-gate.md` | — | G1–G15 orchestrator invariants and review lenses shared by the review, gate, and implement skills |
 
 ## Install
 

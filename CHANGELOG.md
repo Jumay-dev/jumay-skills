@@ -1,5 +1,27 @@
 # Changelog
 
+## 2026-07-29 — jumay-quality-gate: the close-out gate
+
+- New `claude/jumay-quality-gate`: takes work an executor claims is finished and
+  proves or disproves each claim with the orchestrator's OWN commands, then
+  returns PASS/BLOCKED plus a routed fix list. It verifies; it never fixes.
+- Turns `docs/quality-gate.md` from review lenses into executable checks: G1
+  signatures (`%G?` on every added commit, no local signing overrides), claimed
+  shas actually pushed (`merge-base --is-ancestor`, not just existing locally),
+  G2 evidence intact at the current head, G7 claims-vs-reality (fixes really in
+  code, typecheck spot-run by exit code, unresolved review threads from the
+  GraphQL API, CI on the exact head), G3 provenance on deletion claims, G13
+  flagged coverage gaps closed.
+- Deliberately NOT an implement skill: it composes with figma-implement,
+  fleet-orchestrator, oneshot, or hand-written work. The G4 regression pass
+  delegates to jumay-herdr-review (multi-target) or jumay-dual-review (single),
+  so the fix diff is always reviewed by something that did not write it.
+- All commands verified against live data before shipping: the reviewThreads
+  query counted 63 threads on kmono #321 and correctly separated
+  outdated-but-unresolved, which is the case agents habitually miss.
+- A wrapper (`jumay-implement-with-review` = implement skill → this gate → fix
+  loop until PASS) is planned as a thin layer on top; the gate holds the logic.
+
 ## 2026-07-29 — jumay-herdr-review: multi-target reviewer panels
 
 - New `claude/jumay-herdr-review`: one Claude+Codex pane pair per target, all
