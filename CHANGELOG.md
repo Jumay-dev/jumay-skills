@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-07-29 — herdr 0.7 migration: pane skills rewritten, dispatch hardened
+
+- herdr 0.6.8 → 0.7.5 removed the top-level `herdr wait` command and dropped
+  `agent send`, breaking `herdr-agents` and `jumay-figma-implement`. All pane
+  skills now target 0.7.x: `pane wait-output`, `agent wait --until`,
+  `agent prompt`, `agent start --kind --pane`, and `pane split --ratio`.
+- `herdr-agents` rewritten with a version gate (>= 0.7.0), a corrected command
+  reference, and the canonical `start_agent` / `dispatch` / `await_file`
+  helpers the other skills were already citing but which never existed.
+- **Dispatch success ≠ delivery** (new G6 rule, found by live smoke test): an
+  agent still booting (MCP servers, auth) silently swallows a prompt while
+  `agent prompt --wait --until working` returns rc=0 — observed with the
+  composer empty at `0 in · 0 out`. Intake must be confirmed via the
+  input-token counter, then completion gated on the deliverable file. The 0.7
+  API moved this silent-drop failure from Enter-handling to readiness; it did
+  not remove it.
+- `agent start` immediately after `pane split` returns `agent_pane_busy` — the
+  new pane has no shell prompt yet. `start_agent` retries only that error.
+- Pane id FORMAT changed (`w<ws>-N` → `w<ws>:p<N>`): parse ids from JSON, never
+  grep a shape. Legacy `p_NN` in `$HERDR_PANE_ID` still resolves.
+- Obsolete: the codex second-Enter dance. NOT obsolete: verifying the agent is
+  alive, and confirming every dispatch landed.
+
 ## 2026-07-17 — jumay-figma-implement: trust-but-verify session lessons
 
 - Marker ≠ work: completion markers need orchestrator-verifiable

@@ -31,7 +31,10 @@ never take an agent's word for the outcome.
   start agents, send prompts). Never tmux.
 - Grid size = task count; prefer roughly square layouts (6 → 2x3, 8 → 2x4).
 - Label every pane with its ticket id before dispatch.
-- Wait for each agent TUI to report `idle` before sending its prompt.
+- `herdr agent start --kind <k> --pane <id>` blocks until the agent is detected
+  and ready, so there is no separate wait-for-idle step. Retry `agent_pane_busy`
+  (a just-split pane has no shell prompt yet); any other non-zero exit means no
+  agent in that pane — do not dispatch into it.
 
 ## 3. Dispatch
 
@@ -45,8 +48,15 @@ One self-contained prompt per agent, containing:
   and, when a handoff is expected, the review channel/reviewers. Published
   skills are sanitized; the dispatch prompt is where real values enter.
 
-Send with `pane send-text` + `send-keys Enter`, then confirm every agent
-transitions to `working` before reporting dispatch complete.
+Send with the canonical `dispatch` helper from the herdr-agents skill
+(`herdr agent prompt <target> <text> --wait --until working`), fanned out in
+parallel and reaped — a sequential foreground loop leaves later agents
+unbriefed for minutes.
+
+`agent prompt` returning rc=0 does NOT prove the brief landed: an agent still
+booting swallows it silently while `--wait` reports success. Confirm every
+agent's input-token counter moved before reporting dispatch complete, and never
+count an agent that came back `DISPATCH-FAIL` or `DISPATCH-NO-INTAKE`.
 
 ## 4. Monitor event-driven, not chatty
 
@@ -56,7 +66,7 @@ transitions to `working` before reporting dispatch complete.
   the foreground and do not sleep blindly.
 - On wake: read the finished/blocked pane (`herdr pane read <id> --lines 40
   --source recent`), act, then re-arm the watcher on the panes still working.
-- Blocked agent: read what it needs; answer via `send-text` + Enter if you can,
+- Blocked agent: read what it needs; answer via `herdr agent prompt` if you can,
   escalate to the user only for decisions that are genuinely theirs.
 - Idle agent claiming completion: verify (next section), then either accept or
   dispatch a follow-up to the same pane — warm agents retain context, so
@@ -105,6 +115,7 @@ you — the agent has the context and must own its PR.
 
 - `chmod +x` the watcher before backgrounding it; launch via the harness's
   background mechanism, not shell `&` (the shell dies with the tool call).
-- A pane id is not an agent until its TUI boots — wait for `idle` first.
+- A pane id is not an agent until its TUI boots — let `agent start` prove it
+  rather than assuming, and never dispatch into a pane whose start failed.
 - Do not dispatch follow-up work as `pane run`; running TUIs take
-  `send-text` + `send-keys Enter`.
+  `herdr agent prompt`. `pane run` is for shells only.

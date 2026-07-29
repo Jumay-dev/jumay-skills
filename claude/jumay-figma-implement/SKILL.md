@@ -225,6 +225,21 @@ agent's summary:
   override survives a redundancy claim, document why inline.
 - Drive the deployed/local component workbench with a headless browser
   (the browse skill) for user-reported behaviors (hover, keyboard, scroll).
+- Proactively exercise EVERY interactive/un-baked state before the user does —
+  do not wait for a bug report. Figma frames almost always bake exactly one
+  state (a toggle OFF, an input at a static value, tab A, a collapsed expander);
+  the un-baked states are where defects escape (this pipeline shipped a switch
+  thumb that overshot its track only when ON, and a Max button that filled 16
+  decimal places — both invisible in the default frame). For each control,
+  drive it into its other states and verify computed CSS/geometry AND value
+  formatting, both themes. Confirm the verifier captured these non-default
+  states as evidence, not just the frame's baked state.
+- Any REUSED kit/shared component must be re-verified against its Figma spec in
+  the states/props this feature uses (incl. dark mode and any className
+  overrides) — "reused == correct" is a false assumption (a reused input chip
+  shipped with the wrong radius + a missing dark-mode fill; a reused Switch broke
+  because a className width/translate override fought its size prop). Grep the
+  diff for className geometry layered on a kit variant/size prop.
 
 ## Phase 4.5 — FRESH-EYES REVIEW (optional, recommended before close)
 
@@ -251,17 +266,19 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
   `w<workspace>-N`, and a wrong grep silently returns empty). Label
   immediately; pane IDs RENUMBER when any pane closes — always relocate
   agents by label via `pane list` before sending anything.
-- After `pane run <agent-cli>`, VERIFY the agent is actually alive before
-  dispatching: agent CLIs can auto-update and exit on launch ("restart me"),
-  dropping the pane back to a shell — text sent then goes to the shell
-  prompt. Wait for agent-status idle AND confirm the agent is detected.
-- Sending to codex TUI: `send-text` then Enter; a paste often needs a
-  SECOND Enter when idle. If the agent is `working`, use Tab to queue
-  instead — check `herdr agent list` status first, every time.
-- VERIFY every dispatch landed: after sending, confirm status flips to
-  `working` (or the token counter moves). Dispatches sent during TUI startup
-  or right after a turn are silently dropped — re-send if the pane stays
-  idle with unchanged counters.
+- Launch agents with `agent start <name> --kind <k> --pane <id>` (herdr >= 0.7);
+  it blocks until the agent is detected and ready. Fired immediately after
+  `pane split` it returns `agent_pane_busy` — the new pane has no shell prompt
+  yet, so retry that error (see `start_agent` in herdr-agents). A start failure
+  means NO agent in that pane: never dispatch into it.
+- Dispatch with `agent prompt <target> <text> --wait --until working` — it
+  submits text and Enter atomically, so the second-Enter dance is gone. But
+  **rc=0 does NOT mean the prompt landed**: an agent still loading (MCP
+  servers, auth) silently swallows it while `--wait` still reports success.
+  VERIFY INTAKE — the input-token counter must move (`0 in` = nothing
+  received) — and re-send if it hasn't. Use the canonical `dispatch` helper
+  from herdr-agents, which does this. If the agent is already `working` the
+  prompt queues, so check `herdr agent list` first when ordering matters.
 - Idle ≠ done: agents die mid-turn on API errors (ECONNRESET) and sit idle
   with no output. Every brief must define an exact completion marker
   ("X COMPLETE <artifact>"); on idle, check for the marker first — if absent,
@@ -301,7 +318,7 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
   queued behind a checks-wait starve until the wait finishes. POLICING THIS
   IS THE ORCHESTRATOR'S JOB — whenever you queue an edit and the agent's
   current turn is a CI/review wait (read the pane to check), INTERRUPT the wait
-  (`herdr pane send-keys <id> Esc` — the key name is `Esc`, not `Escape`)
+  (`herdr pane send-keys <id> esc` — `esc` is the canonical name, `escape` also works)
   and fold the new work into a consolidated batch. Waiting out checks on a
   head you are about to replace is pure waste: group all pending edits,
   then do ONE close — one recapture, one signed commit + push, one
@@ -321,9 +338,10 @@ what deviated from Figma and why (USER-DECISIONs), remaining human steps
   the working tree uncommitted with the local workbench hot-reloading, wait
   for the user's explicit go, and only then commit + push. New feedback during
   the QA window folds into the same held batch.
-- Waiting: `herdr wait agent-status --status idle` fires on between-turn
+- Waiting: `herdr agent wait <target> --until idle` fires on between-turn
   blips. Use a debounce loop — require idle to hold across two 180s checks —
-  run in background, and handle the pane-gone case.
+  run in background, and handle the pane-gone case. Prefer gating on the
+  deliverable file over any idle signal.
 - GPG/smartcard signing: if an agent reports pinentry cancelled /
   unverified signatures, trigger `echo test | gpg --clearsign -u <key>` from
   the orchestrator to pop pinentry for the user, then tell the agent to
