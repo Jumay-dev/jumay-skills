@@ -10,6 +10,12 @@ Codex CLI), then an orchestrator verification-and-merge pass. The orchestrator
 never forwards raw findings: every surviving finding is verified per
 `docs/quality-gate.md` (the repo this skill ships in) before it reaches the user.
 
+**Scope:** this skill is the **single-target** path — in-process, no herdr
+session required, works from any terminal. For several targets at once, or when
+you want reviewer panes that stay open to dig into, use `jumay-herdr-review`
+(pane pairs per target with blind-spot cross-examination). Both bind the same
+quality gate; pick by target count and whether you are in herdr.
+
 ## Inputs
 - A target: PR number/URL, or a branch/worktree (default: current worktree's
   branch vs its PR base; fall back to origin/master).

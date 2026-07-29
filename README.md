@@ -22,6 +22,9 @@ each landing a green PR in 25–55 minutes.
 | `claude/herdr-agents` | `/herdr-agents` | Spawn and orchestrate agent fleets in [herdr](https://herdr.dev) panes |
 | `claude/fleet-orchestrator` | `/fleet-orchestrator` | Full orchestration loop: scope of tasks in, one agent per task, monitored and independently verified PRs out |
 | `claude/jumay-figma-implement` | `/jumay-figma-implement` | Figma pointer → merged-ready PR via a five-phase pipeline (investigate → interview → execute → verify → close), orchestrator-verified at every gate |
+| `claude/jumay-dual-review` | `/jumay-dual-review` | Single-target dual-engine review (Claude subagent + Codex CLI in parallel), verified against the quality gate and routed per the stacked-PR convention |
+| `claude/jumay-herdr-review` | `/jumay-herdr-review` | Multi-target review panel: a Claude+Codex pane pair per PR/branch, each ruling on the other's blind spots, converged into one verified report per target |
+| `docs/quality-gate.md` | — | G1–G15 orchestrator invariants and review lenses shared by the review and implement skills |
 
 ## Install
 
