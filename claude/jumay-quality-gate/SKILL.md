@@ -101,21 +101,8 @@ still at hook render has not fixed it (G14).
 a pasted green log. Verify by exit code, never by grepping possibly-coloured
 output.
 
-**Review threads.** Unresolved counts come from the API, not from the agent:
-
-```sh
-gh api graphql -f query='
-  query($owner:String!,$repo:String!,$pr:Int!){
-    repository(owner:$owner,name:$repo){
-      pullRequest(number:$pr){
-        reviewThreads(first:100){ nodes{ isResolved isOutdated path line } } } } }
-' -F owner=OWNER -F repo=REPO -F pr=$PR \
-  --jq '.data.repository.pullRequest.reviewThreads.nodes
-        | {total:length, unresolved:[.[]|select(.isResolved|not)]|length}'
-```
-
-Agents habitually treat `isOutdated` threads as closed — they are not. Bot
-threads that land after the agent's last sweep get missed entirely.
+**Review threads.** Counted and classified in Phase 7, not here. Do not accept
+an agent's summary of what it answered.
 
 **CI on the exact head.** `gh pr checks "$PR"` — confirm the run is against the
 recorded head sha, not an older one.
@@ -149,15 +136,67 @@ git diff "$FIRST_FIX_COMMIT^..HEAD"    # only what this round changed
 Hand it the fix diff, the original findings, and the framing "find what these
 fixes broke". A fix round without this pass is **not closed**.
 
-## Phase 7 — Verdict
+## Phase 7 — Review threads answered
+
+The verdict can block on unresolved threads, so something has to enumerate them.
+Do it here, across **every PR in the stack** — a finding raised on a base branch
+is often fixed in a child, and no GitHub view shows that.
+
+```sh
+# Resolution state — REST comments cannot tell you isResolved.
+gh api graphql -f query='
+  query($owner:String!,$repo:String!,$pr:Int!){
+    repository(owner:$owner,name:$repo){
+      pullRequest(number:$pr){
+        reviewThreads(first:100){ nodes{ isResolved isOutdated path line
+          comments(first:50){ nodes{ author{login} body } } } } } } }
+' -F owner=OWNER -F repo=REPO -F pr=$PR
+
+# Bodies carry the claimed count ("found N potential issues") to reconcile against.
+gh api "repos/$REPO/pulls/$PR/reviews" --paginate
+```
+
+Reconcile the count a review body claims against the inline threads you actually
+fetched. If a body says "found 8 potential issues" and you are holding 3, you are
+holding 3.
+
+Five traps, each observed in the wild:
+
+1. **A green bot check is not an empty review.** Devin's check passed on a PR
+   carrying 8 comments. Never infer thread state from `gh pr checks`.
+2. **Never truncate the fetch.** `--paginate` with no `head`/`tail`. A piped
+   `head -120` is how the 8-vs-3 above happened.
+3. **`outdated`/`position` is not relevance.** A thread showed `outdated=false`
+   against a file the PR had deleted. Classify by reading current code.
+4. **Bots do not re-review every push.** Unchanged IDs and counts after a fix
+   mean *not re-run*, not *still broken* — and not *fixed* either.
+5. **A reply is not a resolution.** Threads stay open until a human resolves
+   them. Resolving requires the GraphQL `resolveReviewThread` mutation, and this
+   skill does not call it: an agent resolving threads against its own work hides
+   history from the reviewer.
+
+Emit a ledger per PR — thread, one-line finding, and one of **fixed** (name the
+commit), **partly** (state what remains), **open**, or **stale** (the code it
+cites is gone). Classify against current code with your own grep; a fix claimed
+in a reply is a self-report, and G7 says that is not evidence.
+
+Reply on the thread for anything fixed or partly fixed, naming the commit and
+stating residuals plainly. A "fixed" reply that omits a known residual is worse
+than no reply — it retires a thread a reviewer would still want.
+
+**Done when:** every thread in every stack PR carries a status, claimed counts
+reconcile with fetched counts, and anything still **open** is named in the
+verdict as `BLOCKED-UNADDRESSED`.
+
+## Phase 8 — Verdict
 
 Report one of:
 
 - **PASS** — every claim independently confirmed. State what you verified and
   how, not that the agent said so.
 - **BLOCKED** — list the failed invariant(s) by ID (`BLOCKED-SIGNING`, evidence
-  stripped, unpushed sha, red CI, unresolved threads, open regression). Nothing
-  merges or undrafts on a BLOCKED gate.
+  stripped, unpushed sha, red CI, `BLOCKED-UNADDRESSED` review threads, open
+  regression). Nothing merges or undrafts on a BLOCKED gate.
 
 Then a **routing plan (G8)**: which worktree/branch owns each fix per the
 stacked-PR convention, which items are answer-only, which need a user decision.
