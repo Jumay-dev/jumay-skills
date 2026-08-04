@@ -21,16 +21,25 @@ preserved and the task starts from the correct base.
 2. Choose the base branch.
    - Default base is `origin/master`.
    - For stacked PRs, use the explicit parent feature branch as the base instead
-     of `origin/master`.
+     of `origin/master`. When the parent is already tracked as a stack, put the
+     new branch on top with `gh stack add` rather than branching by hand.
    - Do not infer a stacked base from naming alone; use ticket text, PR links, or
      user instructions.
 
-3. Refresh the base before creating the worktree.
-   - Fetch latest refs from origin.
-   - If using the local `master` branch, switch it to `master` and fast-forward
-     it from `origin/master` before branching.
+3. Fetch the latest base BEFORE creating the worktree — never skip this.
+   - `git fetch origin master` first, every time, even when you believe the
+     local copy is current. Branching off a stale local `master` makes an
+     already-squash-merged parent's commits reappear as conflicts and pulls
+     unrelated commits into the diff.
+   - Branch off `origin/master` (the just-fetched remote ref), not local
+     `master`.
+   - If you do use the local `master` branch, switch to it and fast-forward it
+     from `origin/master` before branching — `git merge --ff-only
+     origin/master`. If it will not fast-forward, stop and report; do not force.
    - If `master` cannot be checked out because another worktree owns it, create
      the new worktree directly from `origin/master` and state that in evidence.
+   - For a stacked base, refresh the whole stack with `gh stack sync` instead of
+     rebasing each branch by hand.
 
 4. Create a new isolated worktree.
    - Use a new branch whose name includes the ticket identifier, for example

@@ -97,6 +97,29 @@ branch has unverified signatures (G1) or stripped evidence (G2).
 - Origin: the same two bugs fixed independently on two stack levels forced a
   conflict-heavy reconciliation merge (kmono #321/#322).
 
+**Fetch before you base — always, first.** Every branch, worktree, or rebase
+that starts from master starts from a freshly fetched `origin/master`:
+`git fetch origin master`, then base off `origin/master`, never a stale local
+`master`. A stale base makes an already-squash-merged parent's commits reappear
+as conflicts and drags unrelated commits into the diff — which G3 then reads as
+deletions the PR never made.
+
+**Restack with `gh stack`**, not hand-rolled rebase chains. The stack is a
+first-class object: `gh stack init` / `gh stack add` build it, `gh stack submit`
+opens the PRs, `gh stack view` shows it. When a base merges or a branch's base
+goes stale:
+- `gh stack sync` — fetches, fast-forwards trunk, cascade-rebases every branch
+  onto its updated parent, pushes atomically with `--force-with-lease`. It is
+  non-interactive: on conflict it restores every branch to its original state
+  rather than leaving the stack half-rebased.
+- `gh stack rebase` — the interactive form for resolving those conflicts
+  (`--continue` / `--abort`; `--downstack` / `--upstack` to scope the cascade).
+- `gh stack merge` — merges a PR and every PR below it in the stack.
+
+Fall back to `git rebase --onto <newbase> <oldbase> <branch>` only for what the
+stack model cannot express — replaying a subset of commits, or a branch that was
+never tracked as part of a stack.
+
 ---
 
 # Review-derived code invariants (from human review, kmono PR #321)

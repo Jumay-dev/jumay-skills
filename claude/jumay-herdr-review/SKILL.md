@@ -88,8 +88,8 @@ for ((c=N; c>1; c--)); do COLS+=("$(sp "${COLS[-1]}" right "$(inv $c)" "$REPO")"
 for col in "${COLS[@]}"; do
   slug=$1; shift; WT="$REV/wt-$slug"
   bot=$(sp "$col" down 0.5 "$WT")
-  start_agent "claude-$slug" claude "$col"
-  start_agent "codex-$slug"  codex  "$bot" -- -m gpt-5.6-sol -c model_reasoning_effort=xhigh
+  start_agent "claude-$slug" claude "$col" -- --dangerously-skip-permissions
+  start_agent "codex-$slug"  codex  "$bot" -- --yolo -m gpt-5.6-sol -c model_reasoning_effort=xhigh
   herdr pane rename "$col" "claude-$slug"; herdr pane rename "$bot" "codex-$slug"
 done
 ```
@@ -184,6 +184,10 @@ convention, what is answer-only, what needs a user decision. This skill reviews
 and routes; it does not commit, push, or resolve human review threads. Fixes go
 to the owning executor with the standing constraints (G1 signing, G2 evidence,
 G5 markers).
+
+If a fix lands on a base branch that levels above it depend on, say so in the
+plan: the executor restacks with `gh stack sync` (or `gh stack rebase` when it
+conflicts), never a hand-rolled rebase chain — see G8.
 
 **8 · Regression re-review (G4).** When fixes come back, re-run a SCOPED pass
 over only the changed lines of the fix commits — both panes get the fix diff,
