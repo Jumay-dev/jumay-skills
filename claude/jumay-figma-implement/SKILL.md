@@ -255,9 +255,58 @@ the pane going idle.
 
 ## Phase 5 — CLOSE
 
+### PR title — derive the convention, never guess it
+
+Before opening or renaming a PR, sample what the team actually merges:
+
+```sh
+gh pr list --state merged --limit 60 --json title --jq '.[].title'
+gh pr list --state merged --limit 60 --json title --jq '.[].title' \
+  | grep -oE '^[a-z]+\(([a-z-]+)\)' | sort | uniq -c | sort -rn   # scope frequency
+```
+
+Match the dominant shape, which in kmono is:
+
+`<type>(<scope>): <sentence-case description> (<TICKET>)`
+
+Two traps that a plausible guess gets wrong:
+
+- **Scope tracks the product area, not the directory you edited.** kmono uses
+  `borrow` for everything in the Borrow surface — including work living in
+  `pages/market`. `feat(market): …` looks obviously right and appears in zero
+  merged PRs. Count the scopes; do not infer one from the path.
+- **The ticket goes in trailing parens**, not as a `FE-1234:` prefix.
+
+Re-run the sample per repo; do not carry another repo's convention over.
+
+### Answer and close every agent review thread
+
+Bots re-review after each push, so a PR accumulates threads that look handled
+but are not. Before reporting done, for EVERY unresolved thread:
+
+- **Fixed** → reply naming the commit SHA and what changed. If the finding was a
+  regression your own earlier fix introduced, say so plainly — that is the most
+  useful sentence in the thread. Then resolve it.
+- **Deferred** → reply with where it now lives (ticket/branch) and why it is not
+  here. Resolve only if it is genuinely tracked elsewhere.
+- **Declined** → reply with the evidence that the premise is wrong (the design
+  node, the prevailing convention counted across the codebase, the merge-base
+  proving the code is pre-existing). **Leave it UNRESOLVED** — you reinterpreted
+  the reviewer's ask, so closing your own disagreement is not yours to do.
+
+Reply on each thread individually; a single summary comment does not clear them.
+Use `gh api repos/<owner>/<repo>/pulls/<n>/comments/<id>/replies` per thread and
+the `resolveReviewThread` GraphQL mutation to close.
+
+Never resolve a thread whose fix is not pushed — a resolved thread reads as
+"handled" to every later reviewer.
+
+### Report
+
 Report to the user: final head SHA + signature status, PR link, gate score,
-what deviated from Figma and why (USER-DECISIONs), remaining human steps
-(merge, ticket status). Offer to close panes — never close them unprompted.
+what deviated from Figma and why (USER-DECISIONs), which threads were
+fixed/deferred/declined and which remain open for a human, and remaining human
+steps (merge, ticket status). Offer to close panes — never close them unprompted.
 
 ## Dispatch & monitoring mechanics (hard-won)
 
