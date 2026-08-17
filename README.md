@@ -25,6 +25,7 @@ each landing a green PR in 25–55 minutes.
 | `claude/jumay-dual-review` | `/jumay-dual-review` | Single-target dual-engine review (Claude subagent + Codex CLI in parallel), verified against the quality gate and routed per the stacked-PR convention |
 | `claude/jumay-herdr-review` | `/jumay-herdr-review` | Multi-target review panel: a Claude+Codex pane pair per PR/branch, each ruling on the other's blind spots, converged into one verified report per target |
 | `claude/jumay-quality-gate` | `/jumay-quality-gate` | Post-implementation gate: proves or disproves an executor's completion claims with the orchestrator's own commands, then routes fixes |
+| `claude/jumay-pr-writeup` | `/jumay-pr-writeup` | PR title and description in house style: conventional-commit title with the Linear key, body of exactly Closes / Problem / What this does / Screenshots, and where the cut material belongs instead |
 | `docs/quality-gate.md` | — | G1–G15 orchestrator invariants and review lenses shared by the review, gate, and implement skills |
 
 ## Install
