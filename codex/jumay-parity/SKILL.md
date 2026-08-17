@@ -336,9 +336,10 @@ output ratio), so:
 1. Create a clean git worktree through `$jumay-worktree`.
    - Create a new worktree for every new ticket, even when another parity
      worktree already exists.
-   - Fetch latest refs and refresh `master` from `origin/master` before
-     branching unless the user explicitly asks to base this work on a feature
-     branch.
+   - `git fetch origin master` FIRST, then branch off the freshly fetched
+     `origin/master` — never a stale local `master` — unless the user explicitly
+     asks to base this work on a feature branch. A stale base resurrects a
+     squash-merged parent's commits as conflicts.
    - Use the Linear issue branch name when present.
    - Use one branch and one PR for the whole task by default. Create child
      branches only when the user explicitly asks for stacked PRs.
@@ -523,6 +524,9 @@ output ratio), so:
 
 8. Open the PR.
    - Push the worktree branch.
+   - For an explicitly requested stacked PR, open the whole stack with
+     `gh stack submit` and keep it current with `gh stack sync` after any base
+     merges — do not hand-roll a rebase chain (quality-gate G8).
    - Preflight screenshot upload tooling before composing PR bodies:
      - Check for a primary uploader: `test -x ./vro-upload` or
        `command -v vro-upload`.

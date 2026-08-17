@@ -97,6 +97,29 @@ branch has unverified signatures (G1) or stripped evidence (G2).
 - Origin: the same two bugs fixed independently on two stack levels forced a
   conflict-heavy reconciliation merge (kmono #321/#322).
 
+**Fetch before you base — always, first.** Every branch, worktree, or rebase
+that starts from master starts from a freshly fetched `origin/master`:
+`git fetch origin master`, then base off `origin/master`, never a stale local
+`master`. A stale base makes an already-squash-merged parent's commits reappear
+as conflicts and drags unrelated commits into the diff — which G3 then reads as
+deletions the PR never made.
+
+**Restack with `gh stack`**, not hand-rolled rebase chains. The stack is a
+first-class object: `gh stack init` / `gh stack add` build it, `gh stack submit`
+opens the PRs, `gh stack view` shows it. When a base merges or a branch's base
+goes stale:
+- `gh stack sync` — fetches, fast-forwards trunk, cascade-rebases every branch
+  onto its updated parent, pushes atomically with `--force-with-lease`. It is
+  non-interactive: on conflict it restores every branch to its original state
+  rather than leaving the stack half-rebased.
+- `gh stack rebase` — the interactive form for resolving those conflicts
+  (`--continue` / `--abort`; `--downstack` / `--upstack` to scope the cascade).
+- `gh stack merge` — merges a PR and every PR below it in the stack.
+
+Fall back to `git rebase --onto <newbase> <oldbase> <branch>` only for what the
+stack model cannot express — replaying a subset of commits, or a branch that was
+never tracked as part of a stack.
+
 ---
 
 # Review-derived code invariants (from human review, kmono PR #321)
@@ -167,3 +190,54 @@ central cached query; feature queries consume the cache and never refetch.
 - Origin: grigored's marketContext directives — deprecated
   KaminoMarket/KaminoObligation usage, and market data reloaded inside a
   per-action query instead of the markets cache.
+
+---
+
+# Orchestration invariants (from the FE-1096 cycle, kmono PR #548)
+
+The workflow held; these four are the gaps it did not cover.
+
+## G16 — CI gate parity
+Enumerate the repo's CI jobs BEFORE pushing and run each one locally. Read
+`.github/workflows` (or equivalent) and list every gate, not just the obvious
+three. Typecheck + lint + tests is a subset, not the set.
+- When a gate cannot be run locally, say so explicitly rather than implying full
+  coverage — an unrun gate is an unknown, not a pass.
+- Origin: a branch opened with `Steiger (FSD)` and `Knip` failing, both never run
+  locally, costing two CI rounds. Steiger caught a real FSD violation (an
+  entity→entity import) that three review passes had missed.
+
+## G17 — A new test must fail against the old code
+Any test written to pin a fix must be shown to FAIL on the pre-fix
+implementation. Copy the old logic into a sibling module and run the new test
+file against it; a test that passes both ways is decoration, not coverage.
+- Applies hardest to tests the orchestrator ASKED for — those carry the
+  assumption of coverage without the proof.
+- Origin: two tests requested specifically to pin the new LTV projection both
+  passed against a reimplementation of the superseded logic — one had empty
+  borrows so both paths computed zero, the other passed a zero delta so the term
+  under test was dead. Found only because a reviewer ran the revert experiment.
+
+## G18 — CI failure provenance
+Before fixing a red gate, establish whether it is yours: does the flagged file
+exist on your branch, and does the same gate fail on the base branch
+independently? Check the base's own recent run or the PR that introduced the
+file.
+- A failure inherited from the base is reported, not fixed — fixing it means
+  touching another team's work inside an unrelated PR.
+- Origin: `Knip` failed on two unused files that had landed on master an hour
+  earlier via a PR merged with that same check already red. Without the
+  provenance check the fix would have been deleting deliberately staged code.
+
+## G19 — Never offer an executor a choice between a safe and an unsafe option
+When a brief lists alternatives ("fall back OR throw", "filter OR warn"), the
+executor will pick one and the orchestrator will rationalise it. If one option is
+safer, specify it and explain why; put the alternative in a "rejected because"
+note, not in the instruction.
+- Corollary: when a fix hardens a SHARED function, enumerate every consumer
+  before choosing the severity of the failure mode.
+- Origin: a brief offering "fall back to the local computation, or surface as
+  unavailable" produced a `throw` in a projection shared by four action forms —
+  permanently blocking Repay, the one action that reduces debt, on exactly the
+  loans most likely to need it. A review bot caught what the orchestrator had
+  accepted.

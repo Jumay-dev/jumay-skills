@@ -16,7 +16,8 @@ Use this for one-ticket webapp fixes where the expected outcome is a shipped PR,
 
 2. Create an isolated worktree.
    - Load and follow `$jumay-worktree` before branching.
-   - Start from refreshed `origin/master` unless the ticket is explicitly a stacked PR, in which case use the explicit parent feature branch as the base.
+   - Run `git fetch origin master` FIRST, then start from the freshly fetched `origin/master` — never a stale local `master`, which resurrects a squash-merged parent's commits as conflicts.
+   - If the ticket is explicitly a stacked PR, use the explicit parent feature branch as the base instead, and add the branch with `gh stack add` when the parent is already tracked as a stack (quality-gate G8).
    - Use a branch name that includes the ticket identifier, for example `codex/TICKET-1234-short-slug`.
    - Keep the original checkout untouched except for intentional skill/config changes explicitly requested by the user.
 
