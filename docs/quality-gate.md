@@ -241,3 +241,22 @@ note, not in the instruction.
   permanently blocking Repay, the one action that reduces debt, on exactly the
   loans most likely to need it. A review bot caught what the orchestrator had
   accepted.
+
+## G20 — A green run against a stale base is not evidence
+CI tests your branch MERGED with its base. Before trusting any local green run —
+and before reporting "ready" — confirm `git rev-list --count HEAD..origin/<base>`
+is 0. If it is not, rebase locally (never GitHub's "Update branch", which leaves
+every commit Unverified) and re-run.
+- **Re-run the gates after every rebase even when git reports no conflicts.** The
+  expensive failures are the ones git merges silently: a base that adds a REQUIRED
+  field to a shared type while your new fixture predates it, a shared signature or
+  semantic that changed under a caller that still compiles, a symbol moved between
+  modules. "Rebased cleanly" describes text, not meaning; typecheck describes
+  meaning.
+- Executors commit; the commit-time gate binds them, not just the orchestrator at
+  push time.
+- Origin: on one branch this fired twice. Master added a required `displayDecimals`
+  to `LoanAssetPosition`, then a required `sizeUsd` to the collateral-reserve type;
+  both merged without a conflict and both broke `tsc` on fixtures written hours
+  earlier. The second one reached CI and turned a fully green PR red with no change
+  from the author.

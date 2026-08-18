@@ -1,6 +1,6 @@
 ---
 name: jumay-ci-preflight
-description: Derive the repo's full CI gate list from its workflow config and run every gate that can run locally BEFORE pushing, reporting explicitly which gates could not be checked. Use before opening a PR, before pushing to an open PR, or when asked to "preflight", "check CI locally", or "will CI pass". Also triages an already-red gate for provenance — yours or inherited from the base.
+description: Run the repo's real CI gates locally before committing and before pushing, derived from the workflow config rather than assumed, and prove the base is current first — a green run against a stale base is not evidence. Use before any commit, before opening or pushing to a PR, after any rebase, or when asked to "preflight", "check CI locally", "run the checks", or "will CI pass". Also triages an already-red gate for provenance — yours or inherited from the base.
 ---
 
 # Jumay CI Preflight
@@ -8,7 +8,45 @@ description: Derive the repo's full CI gate list from its workflow config and ru
 Typecheck + lint + tests is a **subset** of CI, not the set. This skill finds the
 rest before CI does.
 
-Implements quality-gate **G16 (CI gate parity)** and **G18 (failure provenance)**.
+Implements quality-gate **G16 (CI gate parity)**, **G18 (failure provenance)** and
+**G20 (stale-base green runs)**.
+
+Two moments, two lanes:
+
+| Lane | When | What runs |
+| --- | --- | --- |
+| **Commit lane** | before every commit | the fast gates your diff can break: typecheck, lint, custom rules, the affected tests |
+| **Push lane** | before push / PR / after rebase | Phase 0 base check, then every runnable gate |
+
+The commit lane is the cheap one and it is not optional — an executor that commits
+without it hands the orchestrator work that has to be redone. The push lane is the
+full sweep below.
+
+## Phase 0 — Prove the base is current (push lane)
+
+**Do this first. A green run against a stale base is not evidence** — CI tests your
+branch *merged with the base*, so a base that moved under you can turn a green local
+run red with no change of yours.
+
+```bash
+git fetch origin <base>
+git rev-list --count HEAD..origin/<base>     # 0 = current
+```
+
+If you are behind, rebase locally **before** running any gate — never via GitHub's
+"Update branch", which re-signs nothing and leaves every commit Unverified.
+
+After any rebase, **re-run the gates even if git reported no conflicts.** The
+dangerous case is the one git merges silently:
+
+- the base adds a **required field** to a shared type, and your new fixture predates
+  it — clean merge, broken `tsc`;
+- the base changes a **shared function's signature or semantics**, and your caller
+  still compiles but now means something different;
+- the base moves a symbol between modules while you edited its old home.
+
+Typecheck is the cheapest detector for the first two and catches what git cannot.
+"Rebased cleanly" is a statement about text, not about meaning.
 
 ## Phase 1 — Enumerate the gates
 
@@ -101,10 +139,14 @@ failure with no code change from you.
 
 ## When to run
 
-- Before opening a PR — always.
-- Before every push to an open PR — the cheap version: the gates your diff could
-  plausibly affect, plus any that failed last time.
-- After a rebase onto a new base — the full set, since the base changed under you.
+- **Before every commit** — commit lane. Typecheck, lint, custom rules and the
+  affected tests. Cheap, and it keeps broken work out of the history.
+- **Before opening a PR** — push lane, full set, starting at Phase 0.
+- **Before every push to an open PR** — Phase 0, then the gates your diff could
+  plausibly affect plus any that failed last time.
+- **After every rebase** — full set. Especially typecheck. See Phase 0.
+- **Whenever CI goes red on a branch that was green locally** — suspect the base
+  first (Phase 0), then run provenance triage (Phase 5).
 
 ## Checklist
 
@@ -114,3 +156,6 @@ failure with no code change from you.
 - [ ] Runnable gates actually run, exact output captured
 - [ ] Unchecked gates named explicitly in the report
 - [ ] Any red gate triaged for provenance before being fixed
+- [ ] Base confirmed current (`HEAD..origin/<base>` is 0) before trusting a green run
+- [ ] After any rebase, typecheck re-run even though git reported no conflicts
+- [ ] Commit lane run before each commit, not just once before the push
