@@ -1,6 +1,6 @@
 ---
 name: jumay-pr-writeup
-description: Write a PR title and description in Mike's house style — conventional-commit title with the Linear key, and a body of exactly Closes / Problem / What this does / Screenshots. Use when opening a PR, rewriting a bloated PR body, or when asked to "write the PR description", "fix the PR body", or "open the PR". Also tells you where the material that does NOT belong in the body should go instead.
+description: Write a PR title and description in Mike's house style — conventional-commit title with the Linear key, and a body of exactly Closes / Problem / What this does / Screenshots / QA steps. Use when opening a PR, rewriting a bloated PR body, or when asked to "write the PR description", "fix the PR body", or "open the PR". Also tells you where the material that does NOT belong in the body should go instead.
 ---
 
 # Jumay PR Write-up
@@ -29,7 +29,7 @@ type(scope): short description (FE-1234)
 - Check the target repo's `CLAUDE.md` / `CONTRIBUTING.md` first — if it states a
   convention, that wins over this file.
 
-## Body — these four parts, in this order, and nothing else
+## Body — these five parts, in this order, and nothing else
 
 ### 1. `Closes FE-1234`
 
@@ -82,6 +82,36 @@ GH_SESSION_TOKEN="$TOKEN" gh image --repo <owner>/<repo> shot1.png shot2.png
 Verify each URL returns 200 **with that same session** before trusting it;
 anonymous curl 404s on a private repo even for a valid asset.
 
+### 5. `## QA steps`
+
+How a reviewer reproduces the change by hand. Required. CI proves the code is
+correct; it does not prove the feature does what the ticket asked, and the
+reviewer is the one who checks that.
+
+Numbered, imperative, each step with its expected result. Lead with the state the
+reviewer needs — a step they cannot reach is worse than no step at all.
+
+```markdown
+**Prerequisites:** wallet connected, on a loan you hold.
+
+1. Open `/borrow/loan/<market>/<obligation>` — page loads, no form open.
+2. Add `?action=repay` and reload — the Repay form opens.
+3. Switch to Borrow in the panel — the URL becomes `?action=borrow`.
+4. Close the form — `action` drops out of the URL.
+```
+
+Happy path is the floor. Add the one or two negative cases the change actually
+guards (a bad param value, an empty state) — not an exhaustive matrix, which is
+what the tests are for.
+
+Keep it to a couple of minutes of clicking. If reproducing needs seeded on-chain
+state, a funded wallet, or a feature flag, say so in the prerequisites rather
+than letting the reviewer discover it at step 4.
+
+This is **not** the cut "testing section" below: that rule bans reporting *your*
+test results, which CI already shows. This section is instructions for someone
+else to exercise the change.
+
 ## Cut these — and put them where they belong
 
 These are the sections that got deleted. The information is not worthless, it is
@@ -92,7 +122,7 @@ These are the sections that got deleted. The information is not worthless, it is
 | "Shared code touched, reviewers start here" | The diff shows it. If a shared change is genuinely risky, say so in a review thread or ask a reviewer directly. |
 | Architecture rationale, why approach A over B | Commit message body, or a reply on the review thread that asks |
 | Known limitations, edge cases not handled | Linear tickets. Link them from the ticket, not the PR. |
-| Test counts, "108 files / 960 tests pass" | CI is the evidence. Self-reported counts are noise at best. |
+| Test counts, "108 files / 960 tests pass" | CI is the evidence. Self-reported counts are noise at best. (Manual repro steps are different — they belong in `## QA steps`.) |
 | Typecheck/lint status | Same. |
 | Review history, rounds, what earlier revisions got wrong | Nowhere. It is process, not change. |
 | Changed test expectations with justification | The review thread where it was raised, or the commit message |
@@ -123,9 +153,10 @@ at the current head, do not just delete it.
 ## Checklist
 
 - [ ] Title is `type(scope): description (FE-xxxx)` and reads as a changelog line
-- [ ] Body is `Closes` + Problem + What this does + Screenshots, in that order
-- [ ] No testing section, no limitations section, no review history
+- [ ] Body is `Closes` + Problem + What this does + Screenshots + QA steps, in that order
+- [ ] No test counts, no limitations section, no review history
 - [ ] Problem quotes the real user-visible symptom
 - [ ] "What this does" is one paragraph
 - [ ] Screenshots cover the states, uploaded via the authorized session, each 200
+- [ ] QA steps cover the happy path, name their prerequisites, and state expected results
 - [ ] Any bot-appended block preserved verbatim
