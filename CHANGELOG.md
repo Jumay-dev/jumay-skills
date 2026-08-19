@@ -1,5 +1,69 @@
 # Changelog
 
+## 2026-08-19 — jumay-commit: the cheap gate stage ⑤ was missing
+
+- New `claude/jumay-commit`, filling the one pipeline stage that had rules
+  (G1, G8) but no skill. Its contract is deliberately narrow: every commit
+  compiles and lints **on its own**. The branch-wide CI sweep stays at stage ④
+  in `jumay-ci-preflight` — running the full CI set on each of five atomic
+  commits is why per-commit checks get abandoned.
+- **Derives hooks as well as scripts.** kmono already runs husky: `pre-commit`
+  does oxfmt+oxlint on staged `apps/frontend/src/**`, `pre-push` does typecheck
+  + knip + lint:rules. A skill that re-ran typecheck per commit would duplicate
+  pre-push and be slow, so Phase 1 builds a gap table and runs only the right
+  column. Two gaps that table exposes in kmono: the pre-commit globs miss
+  `libs/ui`, configs and workflows entirely, and nothing typechecks until push —
+  so five atomic commits can hide a #2 that does not compile.
+- **Checks the index, not the working tree.** Every linter reads files on disk;
+  with unstaged changes present you validate something you are not committing.
+  `git diff --quiet` is the cheap proof. Explicitly forbids stashing around this
+  in an agent loop — a failed check between stash and pop strands the user's
+  work in a stash they never made.
+- Records that a hook can rewrite the commit: kmono's `pre-commit` runs `oxfmt`
+  then `git add`, so committed content differs from staged content.
+- `--no-verify` forbidden; a red gate gets a G18 provenance check before any fix.
+
+## 2026-08-19 — jumay-review-reply: replies a human can scan
+
+- New `claude/jumay-review-reply`: the *shape* of a PR review-thread reply.
+  Six verdict lines (`Fixed in <sha>` / `Fixed in <sha>, differently` /
+  `Not fixing` / `Deferred → <ticket>` / `Answered` / `Your call`), a hard
+  3-line budget for everything but a disagreement, and an explicit cut list.
+- Written from measured data, not taste: agent replies on open kmono PRs ran a
+  median of 541–1138 chars and up to 1479, 11–15 lines each. PR #554 carried 49
+  threads at that length — ~500 lines of prose between the reviewer and "did you
+  fix it". The cut list is drawn item by item from those replies: gratitude
+  openers, the reviewer's own diagnosis read back to them, investigation replay,
+  self-justification, prose test enumerations, diff-restating code blocks,
+  adjacent concerns buried in the last paragraph.
+- Deliberately narrow, because two skills already cover the neighbours:
+  `jumay-quality-gate` §Phase 7 enumerates threads and reconciles counts,
+  `jumay-parity` §Review-Response owns comply/push-back/self-resolve policy.
+  This one owns only the text, and cites both rather than restating them.
+- Pipeline gains stage ⑦ Review response (`stages/7-review-response.md`) — the
+  only stage that runs backwards: triage into verdicts, route code work back to
+  ③ (fixes are not exempt from ④, per G4), reply only after the sha is on
+  origin, never self-resolve.
+
+## 2026-08-19 — jumay-pipeline: stage entrypoints for the development flow
+
+- New `claude/jumay-pipeline`: an entrypoint per stage of the six-stage flow
+  (investigation ⇄ specification → implementation → selfreview → commit → PR).
+  Each `stages/<n>-<stage>.md` declares the skills that stage loads — `always`
+  vs `if <condition>` — so a stage pulls in its own skills instead of the whole
+  workflow's. You read one stage file at a time; that is the point.
+- `SKILL.md` carries the stage/skill map as a table: the visual control surface
+  for which skills fire where, plus a carry-forward table saying what context
+  each stage inherits (spec.md is the only artifact that runs the whole way).
+- No behavior change to existing skills — this composes what already exists.
+  Quality-gate rules are cited by number, never restated: G19 anchors
+  specification (never offer a safe/unsafe choice), G16/G17/G13/G18 anchor
+  selfreview, G1/G8 anchor commit, G2 anchors PR evidence.
+- Encodes the actor split G4 depends on: the executor's self-review and the
+  different-actor review are both in stage ④ and explicitly not interchangeable.
+- Stage ⑤ is marked host-only — a containerized commit cannot reach the signing
+  key, and G1 forbids working around that.
+
 ## 2026-07-29 — jumay-quality-gate: the close-out gate
 
 - New `claude/jumay-quality-gate`: takes work an executor claims is finished and
