@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-08-19 — jumay-pipeline: stage entrypoints for the development flow
+
+- New `claude/jumay-pipeline`: an entrypoint per stage of the six-stage flow
+  (investigation ⇄ specification → implementation → selfreview → commit → PR).
+  Each `stages/<n>-<stage>.md` declares the skills that stage loads — `always`
+  vs `if <condition>` — so a stage pulls in its own skills instead of the whole
+  workflow's. You read one stage file at a time; that is the point.
+- `SKILL.md` carries the stage/skill map as a table: the visual control surface
+  for which skills fire where, plus a carry-forward table saying what context
+  each stage inherits (spec.md is the only artifact that runs the whole way).
+- No behavior change to existing skills — this composes what already exists.
+  Quality-gate rules are cited by number, never restated: G19 anchors
+  specification (never offer a safe/unsafe choice), G16/G17/G13/G18 anchor
+  selfreview, G1/G8 anchor commit, G2 anchors PR evidence.
+- Encodes the actor split G4 depends on: the executor's self-review and the
+  different-actor review are both in stage ④ and explicitly not interchangeable.
+- Stage ⑤ is marked host-only — a containerized commit cannot reach the signing
+  key, and G1 forbids working around that.
+
 ## 2026-07-29 — jumay-quality-gate: the close-out gate
 
 - New `claude/jumay-quality-gate`: takes work an executor claims is finished and

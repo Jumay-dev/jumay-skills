@@ -14,6 +14,7 @@ each landing a green PR in 25–55 minutes.
 
 | Path | Skill | Purpose |
 | --- | --- | --- |
+| `claude/jumay-pipeline` | `/jumay-pipeline` | Entrypoint for the six-stage flow (investigation → specification → implementation → selfreview → commit → PR); one entrypoint file per stage declaring the skills that stage loads |
 | `codex/jumay-parity` | `$jumay-parity` | Design-parity ticket end to end: Figma evidence, visual gate, PR, review loop |
 | `codex/jumay-worktree` | `$jumay-worktree` | Fresh isolated git worktree per ticket (safe parallel agents) |
 | `codex/jumay-oneshot` | `$jumay-oneshot` | Generic ticket-to-PR workflow with guardrails |
