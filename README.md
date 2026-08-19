@@ -14,7 +14,7 @@ each landing a green PR in 25–55 minutes.
 
 | Path | Skill | Purpose |
 | --- | --- | --- |
-| `claude/jumay-pipeline` | `/jumay-pipeline` | Entrypoint for the six-stage flow (investigation → specification → implementation → selfreview → commit → PR); one entrypoint file per stage declaring the skills that stage loads |
+| `claude/jumay-pipeline` | `/jumay-pipeline` | Entrypoint for the seven-stage flow (investigation → specification → implementation → selfreview → commit → PR → review response); one entrypoint file per stage declaring the skills that stage loads |
 | `codex/jumay-parity` | `$jumay-parity` | Design-parity ticket end to end: Figma evidence, visual gate, PR, review loop |
 | `codex/jumay-worktree` | `$jumay-worktree` | Fresh isolated git worktree per ticket (safe parallel agents) |
 | `codex/jumay-oneshot` | `$jumay-oneshot` | Generic ticket-to-PR workflow with guardrails |
@@ -27,6 +27,7 @@ each landing a green PR in 25–55 minutes.
 | `claude/jumay-herdr-review` | `/jumay-herdr-review` | Multi-target review panel: a Claude+Codex pane pair per PR/branch, each ruling on the other's blind spots, converged into one verified report per target |
 | `claude/jumay-quality-gate` | `/jumay-quality-gate` | Post-implementation gate: proves or disproves an executor's completion claims with the orchestrator's own commands, then routes fixes |
 | `claude/jumay-pr-writeup` | `/jumay-pr-writeup` | PR title and description in house style: conventional-commit title with the Linear key, body of exactly Closes / Problem / What this does / Screenshots, and where the cut material belongs instead |
+| `claude/jumay-review-reply` | `/jumay-review-reply` | Scannable PR review-thread replies: one of six verdict lines, the sha, what changed, inside a hard length budget |
 | `claude/jumay-ci-preflight` | `/jumay-ci-preflight` | Derive the full CI gate list from workflow config, run every gate that runs locally before pushing, name the ones that could not be checked, and triage a red gate for provenance |
 | `docs/quality-gate.md` | — | G1–G15 orchestrator invariants and review lenses shared by the review, gate, and implement skills |
 

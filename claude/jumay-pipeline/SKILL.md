@@ -1,22 +1,24 @@
 ---
 name: jumay-pipeline
-description: Entrypoint for the six-stage development flow — investigation → specification → implementation → selfreview → commit → PR. Loads one stage entrypoint at a time, each declaring the skills that stage needs, so context stays scoped to the current stage instead of the whole workflow. Use when starting a ticket, when asked which stage comes next or which skills a stage uses, or when resuming work mid-flow. Also the map: the stage/skill table below is the visual control surface for the whole system.
+description: Entrypoint for the seven-stage development flow — investigation → specification → implementation → selfreview → commit → PR → review response. Loads one stage entrypoint at a time, each declaring the skills that stage needs, so context stays scoped to the current stage instead of the whole workflow. Use when starting a ticket, when asked which stage comes next or which skills a stage uses, or when resuming work mid-flow. Also the map: the stage/skill table below is the visual control surface for the whole system.
 ---
 
 # Jumay Pipeline
 
 The flow every ticket runs through. Each stage has **its own entrypoint file**
 under `stages/` that names the skills that stage loads. You load **one stage
-file at a time** — that is the whole point. Loading all six is the failure mode
+file at a time** — that is the whole point. Loading all seven is the failure mode
 this replaces.
 
 ```
   ① investigation  ⇄  ② specification  →  ③ implementation
                                                   ↓
-                        ⑥ pr  ←  ⑤ commit  ←  ④ selfreview
+  ⑦ review response  ←  ⑥ pr  ←  ⑤ commit  ←  ④ selfreview
+        └──────────── code changes re-enter ③ ────────────┘
 ```
 
-`①⇄②` is the only loop. Everything else runs forward once.
+Two loops: `①⇄②` bounds scope before work starts, `⑦→③` carries review back
+through it. Everything else runs forward once.
 
 ## Stage / skill map
 
@@ -31,6 +33,7 @@ condition holds. `docs/quality-gate.md` rules are cited by number, not restated.
 | ④ | Selfreview | `stages/4-selfreview.md` | `$jumay-implementation-guardrails` §Self-Review · `/jumay-ci-preflight` | `/jumay-dual-review` *(1 target)* · `/jumay-herdr-review` *(N targets)* · G17 *(new tests)* · G13 *(flagged gaps)* |
 | ⑤ | Commit | `stages/5-commit.md` | G1 · G8 *(fetch before base)* | `gh stack` *(stacked PR)* |
 | ⑥ | PR | `stages/6-pr.md` | `/jumay-pr-writeup` | `/jumay-quality-gate` *(before undraft/merge)* · `/jumay-review-message` *(Slack handoff)* · G2 *(evidence)* |
+| ⑦ | Review response | `stages/7-review-response.md` | `/jumay-review-reply` · `/jumay-quality-gate` §Phase 7 | `$jumay-parity` §Review-Response *(policy)* · G3 *(deletion claims)* · G2 *(evidence)* |
 
 ## Running a stage
 
@@ -60,6 +63,7 @@ nothing else** — not the previous stage's transcript.
 | ④ Selfreview | `spec.md` + the diff. **Not** the implementer's reasoning — see G4 |
 | ⑤ Commit | the diff + `selfreview.md` verdict |
 | ⑥ PR | `spec.md` + the commits + evidence paths |
+| ⑦ Review response | `spec.md` + the threads. **Not** the reasoning behind the code they flag |
 
 `spec.md` is the only artifact that carries the whole way through.
 
@@ -70,3 +74,5 @@ nothing else** — not the previous stage's transcript.
 - **Reviewing someone else's PR** — that is `/jumay-dual-review` or
   `/jumay-herdr-review` standalone, not this flow.
 - **A one-line fix.** Stages ③→⑤→⑥. Skipping is fine; skipping *silently* is not.
+- **Review arrived on an already-merged PR.** Enter at ⑦, but fix forward from a
+  fresh branch — never force-push a merged branch.

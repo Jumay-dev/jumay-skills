@@ -1,5 +1,27 @@
 # Changelog
 
+## 2026-08-19 — jumay-review-reply: replies a human can scan
+
+- New `claude/jumay-review-reply`: the *shape* of a PR review-thread reply.
+  Six verdict lines (`Fixed in <sha>` / `Fixed in <sha>, differently` /
+  `Not fixing` / `Deferred → <ticket>` / `Answered` / `Your call`), a hard
+  3-line budget for everything but a disagreement, and an explicit cut list.
+- Written from measured data, not taste: agent replies on open kmono PRs ran a
+  median of 541–1138 chars and up to 1479, 11–15 lines each. PR #554 carried 49
+  threads at that length — ~500 lines of prose between the reviewer and "did you
+  fix it". The cut list is drawn item by item from those replies: gratitude
+  openers, the reviewer's own diagnosis read back to them, investigation replay,
+  self-justification, prose test enumerations, diff-restating code blocks,
+  adjacent concerns buried in the last paragraph.
+- Deliberately narrow, because two skills already cover the neighbours:
+  `jumay-quality-gate` §Phase 7 enumerates threads and reconciles counts,
+  `jumay-parity` §Review-Response owns comply/push-back/self-resolve policy.
+  This one owns only the text, and cites both rather than restating them.
+- Pipeline gains stage ⑦ Review response (`stages/7-review-response.md`) — the
+  only stage that runs backwards: triage into verdicts, route code work back to
+  ③ (fixes are not exempt from ④, per G4), reply only after the sha is on
+  origin, never self-resolve.
+
 ## 2026-08-19 — jumay-pipeline: stage entrypoints for the development flow
 
 - New `claude/jumay-pipeline`: an entrypoint per stage of the six-stage flow
