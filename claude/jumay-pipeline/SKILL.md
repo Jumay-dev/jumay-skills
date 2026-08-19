@@ -31,7 +31,7 @@ condition holds. `docs/quality-gate.md` rules are cited by number, not restated.
 | ② | Specification | `stages/2-specification.md` | G19 | `$jumay-parity` §Success Gate *(parity ticket)* |
 | ③ | Implementation | `stages/3-implementation.md` | `$jumay-worktree` · `$jumay-implementation-guardrails` | `$jumay-parity` *(design parity)* · `/jumay-figma-implement` *(Figma feature)* · `$jumay-oneshot` *(generic ticket→PR)* · `/herdr-agents` + `/fleet-orchestrator` *(fanning out)* · G8 *(stacked)* |
 | ④ | Selfreview | `stages/4-selfreview.md` | `$jumay-implementation-guardrails` §Self-Review · `/jumay-ci-preflight` | `/jumay-dual-review` *(1 target)* · `/jumay-herdr-review` *(N targets)* · G17 *(new tests)* · G13 *(flagged gaps)* |
-| ⑤ | Commit | `stages/5-commit.md` | G1 · G8 *(fetch before base)* | `gh stack` *(stacked PR)* |
+| ⑤ | Commit | `stages/5-commit.md` | `/jumay-commit` · G1 · G8 *(fetch before base)* | `gh stack` *(stacked PR)* |
 | ⑥ | PR | `stages/6-pr.md` | `/jumay-pr-writeup` | `/jumay-quality-gate` *(before undraft/merge)* · `/jumay-review-message` *(Slack handoff)* · G2 *(evidence)* |
 | ⑦ | Review response | `stages/7-review-response.md` | `/jumay-review-reply` · `/jumay-quality-gate` §Phase 7 | `$jumay-parity` §Review-Response *(policy)* · G3 *(deletion claims)* · G2 *(evidence)* |
 

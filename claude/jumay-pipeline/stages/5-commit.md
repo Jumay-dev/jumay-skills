@@ -7,6 +7,7 @@ Get the work into signed, correctly-based commits. **Never runs in a container**
 
 | | Skill | When |
 |---|---|---|
+| always | `/jumay-commit` | derive the repo's checks + hooks, run the gap, commit signed |
 | always | `docs/quality-gate.md` **G1** | signing invariant |
 | always | `docs/quality-gate.md` **G8** | fetch before you base — always, first |
 | if | `gh stack` | the branch is part of a stack |
@@ -16,6 +17,8 @@ Get the work into signed, correctly-based commits. **Never runs in a container**
 The diff + `selfreview.md` with a passing verdict.
 
 ## Do
+
+`/jumay-commit` owns the mechanics; this stage owns the ordering. In short:
 
 1. **Never touch git signing config.** No local `user.signingkey`, no signature
    format switch, no unsigned commit when the signer is unavailable. On signing
@@ -36,6 +39,7 @@ The diff + `selfreview.md` with a passing verdict.
 
 ## Exit gate
 
+- Every check the hooks do **not** cover ran, judged by exit code.
 - `git log --format='%G?'` shows `G` on every new commit.
 - Commits exist **on origin**, not just locally — verify with your own command,
   not the agent's word (G7).

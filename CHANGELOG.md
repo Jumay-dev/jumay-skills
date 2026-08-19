@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-08-19 — jumay-commit: the cheap gate stage ⑤ was missing
+
+- New `claude/jumay-commit`, filling the one pipeline stage that had rules
+  (G1, G8) but no skill. Its contract is deliberately narrow: every commit
+  compiles and lints **on its own**. The branch-wide CI sweep stays at stage ④
+  in `jumay-ci-preflight` — running the full CI set on each of five atomic
+  commits is why per-commit checks get abandoned.
+- **Derives hooks as well as scripts.** kmono already runs husky: `pre-commit`
+  does oxfmt+oxlint on staged `apps/frontend/src/**`, `pre-push` does typecheck
+  + knip + lint:rules. A skill that re-ran typecheck per commit would duplicate
+  pre-push and be slow, so Phase 1 builds a gap table and runs only the right
+  column. Two gaps that table exposes in kmono: the pre-commit globs miss
+  `libs/ui`, configs and workflows entirely, and nothing typechecks until push —
+  so five atomic commits can hide a #2 that does not compile.
+- **Checks the index, not the working tree.** Every linter reads files on disk;
+  with unstaged changes present you validate something you are not committing.
+  `git diff --quiet` is the cheap proof. Explicitly forbids stashing around this
+  in an agent loop — a failed check between stash and pop strands the user's
+  work in a stash they never made.
+- Records that a hook can rewrite the commit: kmono's `pre-commit` runs `oxfmt`
+  then `git add`, so committed content differs from staged content.
+- `--no-verify` forbidden; a red gate gets a G18 provenance check before any fix.
+
 ## 2026-08-19 — jumay-review-reply: replies a human can scan
 
 - New `claude/jumay-review-reply`: the *shape* of a PR review-thread reply.
