@@ -7,7 +7,7 @@ description: Pre-commit gate and commit discipline — derive the repo's own che
 
 Cheap gate, run often. Its job is that **every commit compiles and lints on its
 own**, not that the branch passes CI — the full sweep is `/jumay-ci-preflight`
-at stage ④, once, before push. Running the CI set on each of five atomic commits
+at stage 4, once, before push. Running the CI set on each of five atomic commits
 wastes minutes per commit and is why per-commit checks get abandoned.
 
 Implements quality-gate **G1 (signing)** and **G8 (fetch before you base)**.

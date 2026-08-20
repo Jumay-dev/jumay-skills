@@ -1,4 +1,4 @@
-# ⑦ Review response
+# Stage 7 — Review response
 
 Review came back. Triage it, route the code changes, reply so a human can read
 the replies. This is the only stage that can send you backwards.
@@ -28,8 +28,8 @@ something the spec listed as a **non-goal** is a scope question, not a task.
    right, the reply is the evidence, not a change.
 3. **Triage each thread into one of the six verdicts** (`/jumay-review-reply`).
    The triage *is* the plan for this round.
-4. **Route the code work back to ③** — anything verdicted `Fixed` re-enters
-   implementation, then ④ and ⑤ as normal. Fixes regress at the same rate as
+4. **Route the code work back to 3** — anything verdicted `Fixed` re-enters
+   implementation, then 4 and 5 as normal. Fixes regress at the same rate as
    features (G4); a fix round is not exempt from selfreview.
 5. **Reply only after the fix is on origin**, naming the pushed sha. A reply
    naming a sha that is not pushed is a false claim.
@@ -63,4 +63,4 @@ shows as quiet — which is the signal to check the agent, not the artifact.
 ## Out
 
 Replied threads + `review-round-<n>.md` (the ledger: thread, finding, verdict,
-sha). Loops to ③ for code, or ends the flow when the round is clean.
+sha). Loops to 3 for code, or ends the flow when the round is clean.

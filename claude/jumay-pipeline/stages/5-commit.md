@@ -1,4 +1,4 @@
-# ⑤ Commit
+# Stage 5 — Commit
 
 Get the work into signed, correctly-based commits. **Never runs in a container**
 — the signing key is on the host, and G1 forbids working around that.

@@ -1,4 +1,4 @@
-# ④ Selfreview
+# Stage 4 — Selfreview
 
 Prove the work is done before anyone else looks at it. Two different actors run
 here — do not collapse them.

@@ -27,7 +27,7 @@ for a in "$@"; do
 done
 
 STAGES=(investigation specification implementation selfreview commit pr review-response)
-GLYPHS=(① ② ③ ④ ⑤ ⑥ ⑦)
+GLYPHS=(1 2 3 4 5 6 7)
 ARTIFACTS=(findings.md spec.md change-log.md selfreview.md '' '' '')   # proof a stage finished
 FRAMES=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
 QUIET_S=300

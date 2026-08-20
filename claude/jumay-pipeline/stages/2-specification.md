@@ -1,4 +1,4 @@
-# ② Specification
+# Stage 2 — Specification
 
 Turn findings into a contract an executor can follow without guessing. This is
 the stage that decides scope.
@@ -16,23 +16,23 @@ the stage that decides scope.
 
 ## Do
 
-1. **Close the open questions.** Each one is answered from code (go back to ①)
+1. **Close the open questions.** Each one is answered from code (go back to 1)
    or by the user. An unanswered question at exit is a decision the executor
    will make for you.
 2. **Write acceptance criteria that are checkable**, not descriptive. "Handles
    the empty case" is not AC; "renders the pending state when `maxLtv` is null"
    is.
 3. **Name the non-goals.** Scope creep is cheaper to prevent here than to review
-   out at ④.
+   out at 4.
 4. **G19 — never offer a choice between a safe and an unsafe option.** If the
    spec says "fall back OR throw", the executor picks one and you will
    rationalise it. Specify the safe one and explain why; put the alternative in
    a *rejected because* note. When a change hardens a shared function, enumerate
    every consumer before choosing the failure mode.
 5. **Pre-declare the evidence** the PR will need (screenshots, overlays, scores)
-   so ③ captures it while the context is live, not at ⑥ from memory.
+   so 3 captures it while the context is live, not at 6 from memory.
 
-## The ①⇄② loop
+## The 1⇄2 loop
 
 Bounded. Two round trips. If open questions survive a second pass they go to the
 user as a decision, not to another investigation round.

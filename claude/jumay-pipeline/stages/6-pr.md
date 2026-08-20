@@ -1,4 +1,4 @@
-# ⑥ PR
+# Stage 6 — PR
 
 Open or update the PR, with evidence intact, and route it for review.
 
@@ -13,7 +13,7 @@ Open or update the PR, with evidence intact, and route it for review.
 
 ## Entry
 
-`spec.md` + the commits + evidence paths captured at ③.
+`spec.md` + the commits + evidence paths captured at 3.
 
 ## Do
 

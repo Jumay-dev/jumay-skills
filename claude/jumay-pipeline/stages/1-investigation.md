@@ -1,4 +1,4 @@
-# ① Investigation
+# Stage 1 — Investigation
 
 Find out what is true before anyone decides what to build. Read-only — this
 stage never edits product code.
@@ -33,7 +33,7 @@ required.
 4. **Check team directives** for deprecations and sanctioned data sources before
    assuming any SDK surface is fair game (G15).
 5. **Collect open questions** — every ambiguity you cannot resolve from code.
-   This list is the handoff to ②, and it is what ends the ①⇄② loop.
+   This list is the handoff to 2, and it is what ends the 1⇄2 loop.
 
 ## Progress
 
@@ -51,9 +51,9 @@ shows as quiet — which is the signal to check the agent, not the artifact.
 - `findings.md` exists with: **File map**, **Current behavior**, **Prior art**,
   **Open questions**.
 - Every claim about current behavior cites a file:line you actually read.
-- Zero proposed solutions. Solutions are stage ②'s job; mixing them here is how
+- Zero proposed solutions. Solutions are stage 2's job; mixing them here is how
   a spec gets written against a codebase nobody checked.
 
 ## Out
 
-`findings.md` → carries to ② whole; carries to ③ as the **File map** section only.
+`findings.md` → carries to 2 whole; carries to 3 as the **File map** section only.
