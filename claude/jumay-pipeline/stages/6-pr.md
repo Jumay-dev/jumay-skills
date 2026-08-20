@@ -34,6 +34,17 @@ Open or update the PR, with evidence intact, and route it for review.
 6. **Gate before undrafting** — `/jumay-quality-gate` proves the claims with its
    own commands. CI state comes from `gh pr checks` **on the exact head**.
 
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS pr <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
+
 ## Exit gate
 
 - Body validates: five sections, evidence present, capture-commit equals the

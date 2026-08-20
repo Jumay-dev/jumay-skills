@@ -45,6 +45,29 @@ condition holds. `docs/quality-gate.md` rules are cited by number, not restated.
    is not evidence). Failed gate means you stay in the stage.
 5. Write the stage's artifact, then move to the next entrypoint.
 
+## Watching a run
+
+```sh
+claude/jumay-pipeline/scripts/pipeline-status.sh          # live, all tickets
+claude/jumay-pipeline/scripts/pipeline-status.sh --once   # one frame, for logs
+```
+
+One row per ticket: seven stage glyphs (done / spinning / pending), the active
+stage's last progress line, and any herdr pane whose label names the ticket.
+
+It reads three sources and asks no agent anything:
+
+| Source | Gives |
+|---|---|
+| `progress.log` — `PROGRESS <stage> <message>` lines | the authoritative stage and what is happening inside it |
+| stage artifacts in the run directory | the fallback stage, when no log exists yet |
+| `herdr agent list` | pane liveness, matched by label |
+
+**You cannot scrape intent — instrument it.** A pane's status line proves an
+agent is working, never what on. That is why each stage entrypoint requires a
+`PROGRESS` line per step: it is the same discipline as G5's completion markers,
+applied to the middle of a stage rather than its end.
+
 ## Run directory
 
 Stage artifacts live in `${PIPELINE_DIR:-$HOME/.pipeline}/<ticket>/` — **outside

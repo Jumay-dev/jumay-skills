@@ -35,6 +35,17 @@ required.
 5. **Collect open questions** — every ambiguity you cannot resolve from code.
    This list is the handoff to ②, and it is what ends the ①⇄② loop.
 
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS investigation <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
+
 ## Exit gate
 
 - `findings.md` exists with: **File map**, **Current behavior**, **Prior art**,

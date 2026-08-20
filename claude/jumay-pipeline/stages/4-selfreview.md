@@ -38,6 +38,17 @@ inherits the author's justification reviews the justification, not the code (G4)
    exist on your branch? Does the gate fail on the base independently? An
    inherited failure is reported, not fixed.
 
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS selfreview <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
+
 ## Exit gate
 
 - Every runnable CI gate ran; unrunnable ones are named explicitly.

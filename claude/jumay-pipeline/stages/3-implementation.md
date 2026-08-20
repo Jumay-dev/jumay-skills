@@ -38,6 +38,17 @@ Build exactly what `spec.md` says, in an isolated worktree.
 One ticket per worktree, one agent per ticket. Never two agents on one ticket.
 Fanning out: check port collisions before spawning — N Storybooks all want 6006.
 
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS implementation <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
+
 ## Exit gate
 
 - Every AC in `spec.md` has a corresponding change you can point to.

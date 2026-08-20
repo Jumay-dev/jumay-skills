@@ -42,6 +42,17 @@ Each round: enumerate → triage → route → fix → reply. Do not start a sec
 round while the first has unanswered threads — that is how a count drifts from 8
 to 3 without anyone noticing.
 
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS review-response <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
+
 ## Exit gate
 
 - Every thread across every stack PR carries a verdict.

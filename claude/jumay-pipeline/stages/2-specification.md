@@ -37,6 +37,17 @@ the stage that decides scope.
 Bounded. Two round trips. If open questions survive a second pass they go to the
 user as a decision, not to another investigation round.
 
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS specification <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
+
 ## Exit gate
 
 - `spec.md` has: **AC** (checkable), **Non-goals**, **Evidence required**,

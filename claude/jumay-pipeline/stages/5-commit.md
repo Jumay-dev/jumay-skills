@@ -37,6 +37,17 @@ The diff + `selfreview.md` with a passing verdict.
 5. **Never sync upward** while a lower branch has unverified signatures (G1) or
    stripped evidence (G2).
 
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS commit <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
+
 ## Exit gate
 
 - Every check the hooks do **not** cover ran, judged by exit code.

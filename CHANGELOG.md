@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-08-20 — pipeline-status: a live dashboard, and the marker that feeds it
+
+- New `claude/jumay-pipeline/scripts/pipeline-status.sh`: one row per ticket,
+  seven stage glyphs, the active stage's last progress line, and any herdr pane
+  whose label names the ticket. `--once` renders a single frame for logs.
+- Each stage entrypoint now requires a `PROGRESS <stage> <message>` line per
+  step, appended to the run directory's `progress.log`. **You cannot scrape
+  intent — instrument it:** a pane's status line proves an agent is working,
+  never what on. Same discipline as G5's completion markers, applied to the
+  middle of a stage rather than its end.
+- The dashboard reads three sources and asks no agent anything: the progress log
+  (authoritative), stage artifacts (fallback before any log exists), and
+  `herdr agent list` for pane liveness. herdr is polled 20x slower than the
+  frame rate — it is the only expensive call.
+- Terminal mechanics worth keeping: `${(f)…}` silently drops empty elements, so
+  line accounting for the redraw uses `${(@f)…}`; each line is erased *before*
+  it is written, since erasing after leaves a shorter frame's tail on screen;
+  and a taller previous frame is wiped explicitly rather than left behind.
+- Also restores `stages/7-review-response.md`, which the map has referenced
+  since #15 but which never landed — see the fix commit for how the split lost it.
+
 ## 2026-08-19 — jumay-commit: the cheap gate stage ⑤ was missing
 
 - New `claude/jumay-commit`, filling the one pipeline stage that had rules
