@@ -1,5 +1,32 @@
 # Changelog
 
+## 2026-08-20 — specification adopts the mandated FE house format
+
+- Stage 2 now writes `spec.md` in the `fe-spec-tickets` house style, which is
+  required by default: `## **Overview**` plus a flat `## **Acceptance Criteria**`
+  checkbox list, each item terse lowercase starting with `should`, UI labels in
+  backticks, no sub-headers, no boilerplate ACs.
+- The format constrains the AC list, not the document. Everything above a `---`
+  is house style and pastes into the ticket unchanged; **Non-goals**, **Evidence
+  required**, **Rejected alternatives** and **Constraints for the executor** live
+  below it and never become ACs. That keeps the executor contract (G19 lives
+  there) without polluting the ticket with internal choices the style bans.
+- A technical constraint becomes an AC only when the requester states it — so
+  stage 2 asks instead of inserting, and parks the rest under Constraints.
+- **Ticket ACs are copied verbatim.** Paraphrasing them lets a PR satisfy the
+  spec and fail QA, because review reads the spec and QA reads the ticket.
+- Adds the grill step — walk the user through the draft one question at a time,
+  each with a recommended answer, rather than presenting it whole and asking
+  "looks good?". This is what keeps the 1⇄2 loop bounded.
+- Adds an explicit **go signal**: placement details, style edits, AC changes and
+  even "looks good" are not go. Nothing dispatches without one.
+- Stage 1 gains the matching evidence rule: any label that will be quoted in an
+  AC must have been read, never inferred — re-screenshot at a larger
+  `maxDimension` rather than guess, and leave `get_design_context` for stage 3.
+- `fe-spec-tickets` is documented as the pipeline's upstream entry point, not a
+  stage: it turns a request into tickets without reading the codebase, and its
+  output is what enters stage 1.
+
 ## 2026-08-20 — pipeline-status: a live dashboard, and the marker that feeds it
 
 - New `claude/jumay-pipeline/scripts/pipeline-status.sh`: one row per ticket,
