@@ -29,7 +29,7 @@ condition holds. `docs/quality-gate.md` rules are cited by number, not restated.
 | # | Stage | Entrypoint | Always | Conditional |
 |---|---|---|---|---|
 | 1 | Investigation | `stages/1-investigation.md` | — | `$jumay-worktree` *(reading a branch/PR)* · `figma:figma-design-to-code` *(Figma URL)* · G3 *(diff provenance)* |
-| 2 | Specification | `stages/2-specification.md` | G19 | `$jumay-parity` §Success Gate *(parity ticket)* |
+| 2 | Specification | `stages/2-specification.md` | `fe-spec-tickets` *(mandated house format)* · G19 | `$jumay-parity` §Success Gate *(parity ticket)* |
 | 3 | Implementation | `stages/3-implementation.md` | `$jumay-worktree` · `$jumay-implementation-guardrails` | `$jumay-parity` *(design parity)* · `/jumay-figma-implement` *(Figma feature)* · `$jumay-oneshot` *(generic ticket→PR)* · `/herdr-agents` + `/fleet-orchestrator` *(fanning out)* · G8 *(stacked)* |
 | 4 | Selfreview | `stages/4-selfreview.md` | `$jumay-implementation-guardrails` §Self-Review · `/jumay-ci-preflight` | `/jumay-dual-review` *(1 target)* · `/jumay-herdr-review` *(N targets)* · G17 *(new tests)* · G13 *(flagged gaps)* |
 | 5 | Commit | `stages/5-commit.md` | `/jumay-commit` · G1 · G8 *(fetch before base)* | `gh stack` *(stacked PR)* |
@@ -93,6 +93,11 @@ nothing else** — not the previous stage's transcript.
 
 ## Where this does not apply
 
+- **A feature request with no ticket yet** — that is `fe-spec-tickets`
+  (`Kamino-Finance/almanack`), which turns a request or a Figma design into
+  Linear tickets from a product point of view and explicitly does not read the
+  codebase. Its output is the ticket that enters at stage 1. This pipeline
+  consumes its **format** at stage 2; it does not run its workflow.
 - **Investigating a bug with no known cause** — use `/investigate` first, then
   enter at 1 with its output as findings.
 - **Reviewing someone else's PR** — that is `/jumay-dual-review` or

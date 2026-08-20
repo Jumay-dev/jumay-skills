@@ -32,7 +32,14 @@ required.
    or a CHANGELOG note changes the spec.
 4. **Check team directives** for deprecations and sanctioned data sources before
    assuming any SDK surface is fair game (G15).
-5. **Collect open questions** — every ambiguity you cannot resolve from code.
+5. **Read labels, never infer them.** Any UI string that will end up quoted in
+   an acceptance criterion must have been read off the design or the ticket. If
+   a label is not confidently readable, re-screenshot at a larger
+   `maxDimension` or screenshot the sub-node in isolation. Use
+   `get_screenshot` here, not `get_design_context` — pixel specs belong to
+   stage 3, and pulling them now buries the investigation in detail the spec
+   cannot use.
+6. **Collect open questions** — every ambiguity you cannot resolve from code.
    This list is the handoff to 2, and it is what ends the 1⇄2 loop.
 
 ## Progress
