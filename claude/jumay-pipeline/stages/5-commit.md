@@ -1,4 +1,4 @@
-# ⑤ Commit
+# Stage 5 — Commit
 
 Get the work into signed, correctly-based commits. **Never runs in a container**
 — the signing key is on the host, and G1 forbids working around that.
@@ -36,6 +36,17 @@ The diff + `selfreview.md` with a passing verdict.
    `git rebase --onto` only for what the stack model cannot express.
 5. **Never sync upward** while a lower branch has unverified signatures (G1) or
    stripped evidence (G2).
+
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS commit <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
 
 ## Exit gate
 

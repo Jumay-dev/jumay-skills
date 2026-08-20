@@ -1,4 +1,4 @@
-# ④ Selfreview
+# Stage 4 — Selfreview
 
 Prove the work is done before anyone else looks at it. Two different actors run
 here — do not collapse them.
@@ -37,6 +37,17 @@ inherits the author's justification reviews the justification, not the code (G4)
 6. **Red gate? Establish provenance before fixing (G18).** Does the flagged file
    exist on your branch? Does the gate fail on the base independently? An
    inherited failure is reported, not fixed.
+
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS selfreview <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
 
 ## Exit gate
 

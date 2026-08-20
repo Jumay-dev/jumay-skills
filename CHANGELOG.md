@@ -1,10 +1,34 @@
 # Changelog
 
-## 2026-08-19 — jumay-commit: the cheap gate stage ⑤ was missing
+## 2026-08-20 — pipeline-status: a live dashboard, and the marker that feeds it
+
+- New `claude/jumay-pipeline/scripts/pipeline-status.sh`: one row per ticket,
+  seven stage glyphs, the active stage's last progress line, and any herdr pane
+  whose label names the ticket. `--once` renders a single frame for logs.
+- Each stage entrypoint now requires a `PROGRESS <stage> <message>` line per
+  step, appended to the run directory's `progress.log`. **You cannot scrape
+  intent — instrument it:** a pane's status line proves an agent is working,
+  never what on. Same discipline as G5's completion markers, applied to the
+  middle of a stage rather than its end.
+- The dashboard reads three sources and asks no agent anything: the progress log
+  (authoritative), stage artifacts (fallback before any log exists), and
+  `herdr agent list` for pane liveness. herdr is polled 20x slower than the
+  frame rate — it is the only expensive call.
+- Terminal mechanics worth keeping: `${(f)…}` silently drops empty elements, so
+  line accounting for the redraw uses `${(@f)…}`; each line is erased *before*
+  it is written, since erasing after leaves a shorter frame's tail on screen;
+  and a taller previous frame is wiped explicitly rather than left behind.
+- Also restores `stages/7-review-response.md`, which the map has referenced
+  since #15 but which never landed — see the fix commit for how the split lost it.
+- Stage numbers are plain digits everywhere. The circled forms rendered too
+  small to read in a terminal, and being double-width they also broke the
+  hand-drawn flow diagram's alignment.
+
+## 2026-08-19 — jumay-commit: the cheap gate stage 5 was missing
 
 - New `claude/jumay-commit`, filling the one pipeline stage that had rules
   (G1, G8) but no skill. Its contract is deliberately narrow: every commit
-  compiles and lints **on its own**. The branch-wide CI sweep stays at stage ④
+  compiles and lints **on its own**. The branch-wide CI sweep stays at stage 4
   in `jumay-ci-preflight` — running the full CI set on each of five atomic
   commits is why per-commit checks get abandoned.
 - **Derives hooks as well as scripts.** kmono already runs husky: `pre-commit`
@@ -40,9 +64,9 @@
   `jumay-quality-gate` §Phase 7 enumerates threads and reconciles counts,
   `jumay-parity` §Review-Response owns comply/push-back/self-resolve policy.
   This one owns only the text, and cites both rather than restating them.
-- Pipeline gains stage ⑦ Review response (`stages/7-review-response.md`) — the
+- Pipeline gains stage 7 Review response (`stages/7-review-response.md`) — the
   only stage that runs backwards: triage into verdicts, route code work back to
-  ③ (fixes are not exempt from ④, per G4), reply only after the sha is on
+  3 (fixes are not exempt from 4, per G4), reply only after the sha is on
   origin, never self-resolve.
 
 ## 2026-08-19 — jumay-pipeline: stage entrypoints for the development flow
@@ -60,8 +84,8 @@
   specification (never offer a safe/unsafe choice), G16/G17/G13/G18 anchor
   selfreview, G1/G8 anchor commit, G2 anchors PR evidence.
 - Encodes the actor split G4 depends on: the executor's self-review and the
-  different-actor review are both in stage ④ and explicitly not interchangeable.
-- Stage ⑤ is marked host-only — a containerized commit cannot reach the signing
+  different-actor review are both in stage 4 and explicitly not interchangeable.
+- Stage 5 is marked host-only — a containerized commit cannot reach the signing
   key, and G1 forbids working around that.
 
 ## 2026-07-29 — jumay-quality-gate: the close-out gate

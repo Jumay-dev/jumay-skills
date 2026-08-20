@@ -1,4 +1,4 @@
-# ③ Implementation
+# Stage 3 — Implementation
 
 Build exactly what `spec.md` says, in an isolated worktree.
 
@@ -22,7 +22,7 @@ Build exactly what `spec.md` says, in an isolated worktree.
 
 1. **`git fetch origin master` FIRST**, then base off the freshly fetched
    `origin/master` — never a stale local `master`, which resurrects a
-   squash-merged parent's commits as conflicts and makes ④ read them as
+   squash-merged parent's commits as conflicts and makes 4 read them as
    deletions (G3/G8). Stacked work bases off the explicit parent, added with
    `gh stack add`.
 2. **Preserve the existing data-flow shape** unless the spec requires changing
@@ -30,7 +30,7 @@ Build exactly what `spec.md` says, in an isolated worktree.
 3. **Implement narrowly.** Follow repo `AGENTS.md`/`CLAUDE.md`. Nothing outside
    the spec's AC; nothing the Non-goals excluded.
 4. **Capture the evidence the spec pre-declared** while the environment is live.
-   Recapturing at ⑥ is how evidence ends up stale or missing (G2).
+   Recapturing at 6 is how evidence ends up stale or missing (G2).
 5. **Verify command outcomes by exit code**, not by reading output optimistically.
 
 ## Parallel safety
@@ -38,11 +38,22 @@ Build exactly what `spec.md` says, in an isolated worktree.
 One ticket per worktree, one agent per ticket. Never two agents on one ticket.
 Fanning out: check port collisions before spawning — N Storybooks all want 6006.
 
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS implementation <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
+
 ## Exit gate
 
 - Every AC in `spec.md` has a corresponding change you can point to.
 - Nothing staged from submodules or artifact directories.
-- Typecheck passes locally (the full gate list is ④'s job, not a reason to skip
+- Typecheck passes locally (the full gate list is 4's job, not a reason to skip
   the cheap one here).
 
 ## Out

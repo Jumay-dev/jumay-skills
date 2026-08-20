@@ -1,4 +1,4 @@
-# ⑥ PR
+# Stage 6 — PR
 
 Open or update the PR, with evidence intact, and route it for review.
 
@@ -13,7 +13,7 @@ Open or update the PR, with evidence intact, and route it for review.
 
 ## Entry
 
-`spec.md` + the commits + evidence paths captured at ③.
+`spec.md` + the commits + evidence paths captured at 3.
 
 ## Do
 
@@ -33,6 +33,17 @@ Open or update the PR, with evidence intact, and route it for review.
    still an open thread. Reconcile the claimed count against the API.
 6. **Gate before undrafting** — `/jumay-quality-gate` proves the claims with its
    own commands. CI state comes from `gh pr checks` **on the exact head**.
+
+## Progress
+
+Append one line per step, so the run is visible without reading your pane:
+
+```sh
+echo "PROGRESS pr <what you are doing now>" >> "$PIPELINE_DIR/<ticket>/progress.log"
+```
+
+The dashboard renders the last line. A log that stops moving for five minutes
+shows as quiet — which is the signal to check the agent, not the artifact.
 
 ## Exit gate
 
