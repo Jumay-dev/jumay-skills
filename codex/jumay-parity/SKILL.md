@@ -330,6 +330,9 @@ output ratio), so:
   capture full pages intending to crop later.
 - On each visual iteration, re-capture and re-inspect only the stories/states
   that changed since the previous iteration, not the full evidence set.
+- Comment at the file's own density (`$jumay-implementation-guardrails` rule 18).
+  Parity work invites narrating pixel reasoning in prose; put the measurements in
+  the PR evidence, not in a block above the className.
 
 ## Workflow
 

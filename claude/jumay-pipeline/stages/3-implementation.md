@@ -29,9 +29,12 @@ Build exactly what `spec.md` says, in an isolated worktree.
    it. A large structural rewrite on an integration ticket is a smell.
 3. **Implement narrowly.** Follow repo `AGENTS.md`/`CLAUDE.md`. Nothing outside
    the spec's AC; nothing the Non-goals excluded.
-4. **Capture the evidence the spec pre-declared** while the environment is live.
+4. **Comment at the file's own density** — `$jumay-implementation-guardrails`
+   rule 18. Count what the file already carries before adding any; explain only a
+   non-obvious *why*, on one line; never restate what the code shows.
+5. **Capture the evidence the spec pre-declared** while the environment is live.
    Recapturing at 6 is how evidence ends up stale or missing (G2).
-5. **Verify command outcomes by exit code**, not by reading output optimistically.
+6. **Verify command outcomes by exit code**, not by reading output optimistically.
 
 ## Parallel safety
 

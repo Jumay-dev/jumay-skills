@@ -22,6 +22,9 @@ inherits the author's justification reviews the justification, not the code (G4)
 ## Do
 
 1. **Executor pass** — the guardrails self-review checklist against your own diff.
+   Includes rule 18: re-read every comment you added and delete the ones the code
+   already says. Comments are written while the reasoning is hot and read months
+   later; this is the only pass that catches the surplus.
 2. **CI parity (G16)** — enumerate every job in `.github/workflows`, run each one
    that runs locally. Name the ones that could not be checked; an unrun gate is
    an unknown, not a pass.
