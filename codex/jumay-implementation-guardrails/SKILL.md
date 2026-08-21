@@ -82,6 +82,13 @@ Use this for non-trivial webapp implementation work, including direct coding tas
    - Prefer an already-installed, canonical utility such as `es-toolkit` for deduplication, compaction, grouping, and similar generic operations.
    - Add a local helper only when it owns domain semantics beyond the generic collection operation.
 
+18. Keep comments minimal — match the file's existing density, and explain only a non-obvious *why*.
+   - Count the comments already in the file before you add any. A file carrying two single-line comments does not want a four-line block. If your additions multiply the file's comment volume, cut them.
+   - Never restate what the code shows. `{/* Mirrors the resolved grid */}` above a div that repeats the same grid classes is noise — delete it, the classes say it.
+   - Prefer a test over a comment when the point is "do not change this". A comment warns; a test enforces. Write the comment only for the why a test cannot express.
+   - Whatever survives goes on one line wherever it fits.
+   - Origin: a layout fix added 10 comment lines to a file that had 2, all multi-line where the existing two were single-line. Trimmed to 3 single-line comments with no meaning lost.
+
 ## Self-Review Checklist
 
 Before committing, answer these in your own head and fix any weak answer:
@@ -100,4 +107,5 @@ Before committing, answer these in your own head and fix any weak answer:
 - Does every new adapter perform validation, normalization, representation change, or a documented type bridge?
 - Are domain scaling and generic unit conversion separate, with the canonical converter reused?
 - Did I search shared code and installed dependencies before adding a generic collection helper?
+- Did I count the file's existing comments before adding mine, keep each to a non-obvious why on one line, and delete anything the code already says?
 - Did tests cover the behavior that could regress, not just the implementation detail?

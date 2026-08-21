@@ -133,8 +133,10 @@ Spawn `codex --yolo` pane, label `<ticket>-exec`, dispatch: spec path +
 "implement exactly, run all validation commands until clean, commit on the
 branch, do NOT create a PR" + the submodule ban + "for focus management,
 dismissal, and positioning, use the primitive library's own APIs before
-hand-rolling any machinery". The verifier owns the PR so evidence and parity
-fixes live in one reviewable place.
+hand-rolling any machinery" + "comment at the file's own density
+(`$jumay-implementation-guardrails` rule 18) — count what the file already
+carries, explain only a non-obvious why, one line". The verifier owns the PR so
+evidence and parity fixes live in one reviewable place.
 
 If work happens in a fresh git worktree and the repo has submodules,
 INITIALIZE the submodules in the worktree before any dependency change
@@ -146,7 +148,8 @@ checkout — and the trap stays invisible until the first real dep addition.
 Exit gate (orchestrator, independently): branch exists with the commit;
 `git show --stat` matches the files-to-create list; validation commands the
 agent claims passed actually pass (spot-run at least typecheck); no
-submodule or artifact dirs staged. Verify command outcomes by EXIT CODE,
+submodule or artifact dirs staged; no comment block the surrounding file's own
+density does not justify. Verify command outcomes by EXIT CODE,
 never by grepping their output: colored output puts ANSI codes between words
 ("error TS" never matches), and "no output through my grep" reads as green
 while the command failed — both produced false-green gates in real runs.
