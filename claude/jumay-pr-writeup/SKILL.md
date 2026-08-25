@@ -131,6 +131,43 @@ These are the sections that got deleted. The information is not worthless, it is
 Rule of thumb: **if a sentence exists to pre-empt a reviewer's objection, cut
 it.** Let them object, then answer on the thread. That is what threads are for.
 
+## Never hard-wrap the prose
+
+GitHub renders PR bodies and comments with GFM line breaks **on**: a single
+newline inside a paragraph becomes a `<br>`, not a space. Prose wrapped at 80
+columns therefore renders as a ragged column roughly half the width of the
+description area — every line breaking where your editor broke it, not where the
+reader's viewport does.
+
+**One paragraph, one line**, however long. Let the browser wrap it.
+
+```markdown
+The status reading carries three states — confirmed, seen, unseen — and a settlement built on it consults the transaction's signed lifetime before calling an unseen signature dead.
+```
+
+not
+
+```markdown
+The status reading carries three states — confirmed, seen, unseen — and a
+settlement built on it consults the transaction's signed lifetime before
+calling an unseen signature dead.
+```
+
+This is invisible in the file you are composing and in `gh pr view`, which
+prints the raw source — it only shows up in the browser, which is where the
+reviewer reads it. Check the rendered page, or check that no prose line in the
+body is short enough to have been wrapped by hand.
+
+Applies to every numbered QA step and bullet too: keep each item on one line.
+Blank lines between blocks are unaffected — those are real paragraph breaks and
+you still need them.
+
+Where hard line breaks ARE the intent — a table row, a list, an address block —
+they work exactly as written. The rule is about prose.
+
+**The same rendering applies to review-thread replies and issue comments**, so
+it binds `jumay-review-reply` and anything else that posts to GitHub.
+
 ## Bot-appended blocks
 
 Review bots (Devin and friends) append their own HTML blocks between markers
@@ -160,3 +197,4 @@ at the current head, do not just delete it.
 - [ ] Screenshots cover the states, uploaded via the authorized session, each 200
 - [ ] QA steps cover the happy path, name their prerequisites, and state expected results
 - [ ] Any bot-appended block preserved verbatim
+- [ ] No hard-wrapped prose — each paragraph, QA step and bullet is one line
