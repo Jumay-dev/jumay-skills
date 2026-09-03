@@ -7,6 +7,7 @@ the replies. This is the only stage that can send you backwards.
 
 | | Skill | When |
 |---|---|---|
+| always | `/jumay-address-review` | the round: verify, route, fix, re-read, resolve |
 | always | `/jumay-review-reply` | the shape of every reply |
 | always | `/jumay-quality-gate` §Phase 7 | enumerate threads, reconcile claimed vs fetched counts |
 | if | `$jumay-parity` §Review-Response | whether to comply, push back, or self-resolve |

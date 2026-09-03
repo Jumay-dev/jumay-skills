@@ -29,6 +29,7 @@ each landing a green PR in 25–55 minutes.
 | `claude/jumay-commit` | `/jumay-commit` | Pre-commit gate: derive the repo's checks and git hooks, run only the gap on the staged content, commit atomically and signed |
 | `claude/jumay-pr-writeup` | `/jumay-pr-writeup` | PR title and description in house style: conventional-commit title with the Linear key, body of exactly Closes / Problem / What this does / Screenshots, and where the cut material belongs instead |
 | `claude/jumay-review-reply` | `/jumay-review-reply` | Scannable PR review-thread replies: one of six verdict lines, the sha, what changed, inside a hard length budget |
+| `claude/jumay-address-review` | `/jumay-address-review` | Handling a review round: verify each finding against the rule it cites and against this PR's diff, route it to the branch that owns the file, fix behind checked exit codes, re-read the thread, reply, resolve |
 | `claude/jumay-ci-preflight` | `/jumay-ci-preflight` | Derive the full CI gate list from workflow config, run every gate that runs locally before pushing, name the ones that could not be checked, and triage a red gate for provenance |
 | `docs/quality-gate.md` | — | G1–G15 orchestrator invariants and review lenses shared by the review, gate, and implement skills |
 
