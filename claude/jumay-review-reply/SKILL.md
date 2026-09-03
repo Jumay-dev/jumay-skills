@@ -15,6 +15,8 @@ answer to *did you fix it*.
 **Scope:** the reply text. Enumerating threads and reconciling counts is
 `/jumay-quality-gate` Phase 7. Whether to comply, push back, or self-resolve is
 `$jumay-parity` §Review-Response. This skill is only the shape.
+The surrounding round — verify, route, fix, re-read, resolve — is
+`/jumay-address-review`.
 
 ## The form
 

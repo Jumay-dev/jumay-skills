@@ -1,5 +1,45 @@
 # Changelog
 
+## 2026-09-03 — a skill for the review round, not just the reply
+
+- New `claude/jumay-address-review`: the judgement and process around review
+  comments, which nothing owned. `/jumay-review-reply` stays the owner of reply
+  *text* (six verdicts, length budget) and is cross-linked, not duplicated.
+- **Bots are right about half the time.** Three real Greptile findings on one
+  stack: one correct against a rule that said exactly what it claimed, one false
+  positive whose cited rule scoped to different parameters (pushed back with the
+  quoted scope; the bot agreed), one whose factual claim was true but whose P1
+  severity was wrong. So: open the cited rule, judge premise and severity
+  separately, quote it back either way.
+- **A finding can be right about the code and wrong about the PR.** Two Devin
+  findings were pre-existing lines the PR never touched — `gh pr diff | grep`
+  returned nothing, the line numbers had only shifted. Same for a shared type
+  the PR consumed but did not modify.
+- **In a stack, the lowest PR that touches a path owns it (G8).** Fixing a
+  file where it was reported instead of where it lives lands the change twice
+  and the copies diverge.
+- **Re-read the thread immediately before replying.** A reviewer rejected an
+  option four minutes before a reply claimed it had been taken — cost a wrong
+  commit, a wrong reply, a revert and a deleted comment. And retract rather than
+  paper over: delete the overtaken reply, do not leave a thread reading settled.
+- **Answered is not resolved.** Nine threads across three PRs sat
+  replied-but-unresolved. `$jumay-parity` §Review-Response is the policy — reply
+  naming the fixing commit, then resolve, and machine-verify zero
+  `isResolved: false` at the final head. `/jumay-quality-gate` Phase 7 still
+  never calls the mutation: a gate that resolves what it audits has audited
+  nothing.
+- **Gate on exit codes.** A commit went up behind a failing suite because the
+  commands were `;`-chained and no status was read. Plus the three things that
+  make a green fix round lie: a suite that fails a different case each run, a
+  lint baseline that silently absorbs one more warning under
+  `--max-warnings=999`, and a reviewer request that overturns a deliberately
+  scored assertion.
+- **Two shell traps that fail silently:** zsh consuming `$BR:path` as a modifier
+  (brace it), and `pnpm exec oxlint $PATHS` from an unquoted scalar linting zero
+  files (use an array, confirm the output names your files).
+- Cross-references added in `jumay-review-reply`, pipeline stage 7, the stage
+  map and the README. No other skill content changed.
+
 ## 2026-08-20 — specification adopts the mandated FE house format
 
 - Stage 2 now writes `spec.md` in the `fe-spec-tickets` house style, which is

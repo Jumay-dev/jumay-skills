@@ -34,7 +34,7 @@ condition holds. `docs/quality-gate.md` rules are cited by number, not restated.
 | 4 | Selfreview | `stages/4-selfreview.md` | `$jumay-implementation-guardrails` §Self-Review · `/jumay-ci-preflight` | `/jumay-dual-review` *(1 target)* · `/jumay-herdr-review` *(N targets)* · G17 *(new tests)* · G13 *(flagged gaps)* |
 | 5 | Commit | `stages/5-commit.md` | `/jumay-commit` · G1 · G8 *(fetch before base)* | `gh stack` *(stacked PR)* |
 | 6 | PR | `stages/6-pr.md` | `/jumay-pr-writeup` | `/jumay-quality-gate` *(before undraft/merge)* · `/jumay-review-message` *(Slack handoff)* · G2 *(evidence)* |
-| 7 | Review response | `stages/7-review-response.md` | `/jumay-review-reply` · `/jumay-quality-gate` §Phase 7 | `$jumay-parity` §Review-Response *(policy)* · G3 *(deletion claims)* · G2 *(evidence)* |
+| 7 | Review response | `stages/7-review-response.md` | `/jumay-address-review` · `/jumay-review-reply` · `/jumay-quality-gate` §Phase 7 | `$jumay-parity` §Review-Response *(policy)* · G3 *(deletion claims)* · G2 *(evidence)* |
 
 ## Running a stage
 
