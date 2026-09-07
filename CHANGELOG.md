@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-07 — a comment is a transparency failure (G20)
+
+- New `docs/quality-gate.md` G20: if code needs a comment to be understood,
+  the code is not transparent — rename, split, or pin the intent with a test.
+  The gate check is mechanical: grep the PR diff's added comment lines; more
+  than a couple, or any restating code or a test, sends the PR back unread.
+- Origin: the FE-1270 stack shipped ~30 added comment lines across three PRs.
+  Reviewer: "if you need to explain code in comments, the code is not
+  transparent." Guardrails rule 18 already bounded density; G20 makes it a gate.
+
 ## 2026-09-03 — a skill for the review round, not just the reply
 
 - New `claude/jumay-address-review`: the judgement and process around review
