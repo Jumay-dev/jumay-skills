@@ -248,10 +248,11 @@ split, or pin the intent with a test instead — never explain it in prose besid
 it. The only comments that survive are the ones the repo's own rule allows
 (kmono: `docs/rules/comments.md` — an upstream quirk, a ticket link, a
 deliberate choice that looks wrong), and each is one line.
-- Gate check: list the `+` comment lines in the PR diff
-  (`git diff <base>...HEAD | grep -E '^\+\s*(//|/\*\*|\*)'`). More than a
-  couple across a PR, or any that restates what the code or a test already
-  says, sends the PR back before the code is read.
+- Gate check: list the `+` comment lines in the PR diff, tests and stories
+  included (`git diff <base>...HEAD | grep -E '^\+\s*(//|/\*\*|\*)'`). More
+  than a couple across a PR, or any that restates what the code or a test
+  already says, sends the PR back before the code is read. A test that needs a
+  comment has the wrong name.
 - A JSDoc that restates a function's branches is deleted; the tests carry the
   intent. A "why" that a better name could carry is a rename, not a comment.
 - Origin: the FE-1270 stack shipped ~30 added comment lines across three PRs,

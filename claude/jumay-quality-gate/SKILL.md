@@ -123,12 +123,13 @@ retargets. A locally clean `git merge-tree` plus an ancestor check overrides a
 
 ## Phase 5b — G20 comment audit
 
-A comment is a transparency failure. Count the comment lines the PR adds — code
-only, not tests or stories — before anyone reads the code:
+A comment is a transparency failure. Count the comment lines the PR adds —
+tests and stories included; a test that needs a comment has the wrong name —
+before anyone reads the code:
 
 ```sh
-git diff "$MB...HEAD" -- '*.ts' '*.tsx' ':!**/__generated__/**' ':!**/*.test.*' ':!**/*.stories.*' \
-  | grep -E '^\+\s*(//|/\*\*|\*|\{/\*)'
+git diff "$MB...HEAD" -- '*.ts' '*.tsx' ':!**/__generated__/**' \
+  | grep -E '^\+\s*(//|/\*\*|\*|\{/\*)' | grep -v '@vitest-environment'
 ```
 
 - Expected output: empty. Each surviving line must be one the repo's own rule
