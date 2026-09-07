@@ -241,3 +241,19 @@ note, not in the instruction.
   permanently blocking Repay, the one action that reduces debt, on exactly the
   loans most likely to need it. A review bot caught what the orchestrator had
   accepted.
+
+## G20 — A comment is a transparency failure
+If code needs a comment to be understood, the code is not transparent. Rename,
+split, or pin the intent with a test instead — never explain it in prose beside
+it. The only comments that survive are the ones the repo's own rule allows
+(kmono: `docs/rules/comments.md` — an upstream quirk, a ticket link, a
+deliberate choice that looks wrong), and each is one line.
+- Gate check: list the `+` comment lines in the PR diff
+  (`git diff <base>...HEAD | grep -E '^\+\s*(//|/\*\*|\*)'`). More than a
+  couple across a PR, or any that restates what the code or a test already
+  says, sends the PR back before the code is read.
+- A JSDoc that restates a function's branches is deleted; the tests carry the
+  intent. A "why" that a better name could carry is a rename, not a comment.
+- Origin: the FE-1270 stack shipped ~30 added comment lines across three PRs,
+  each narrating a why the naming could have held. Reviewer: "if you need to
+  explain code in comments, the code is not transparent."
