@@ -6,8 +6,8 @@ description: Post-implementation verification gate — takes work an executor cl
 # Jumay Quality Gate
 
 The closing gate for any implementation cycle. An executor says it is done; this
-skill decides whether that is true. It runs `docs/quality-gate.md` (G1–G8, G13)
-as **executable checks**, not as review opinions.
+skill decides whether that is true. It runs `docs/quality-gate.md` (G1–G8, G13,
+G20) as **executable checks**, not as review opinions.
 
 **Iron rule (G7): a self-report is never evidence.** Every claim below is
 confirmed with your own command, or it is not confirmed. "Idle" is not done, a
@@ -121,6 +121,25 @@ retargets. A locally clean `git merge-tree` plus an ancestor check overrides a
   is a scheduled incident, not an observation — one escaped to QA on exactly the
   branch a specialist had flagged.
 
+## Phase 5b — G20 comment audit
+
+A comment is a transparency failure. Count the comment lines the PR adds — code
+only, not tests or stories — before anyone reads the code:
+
+```sh
+git diff "$MB...HEAD" -- '*.ts' '*.tsx' ':!**/__generated__/**' ':!**/*.test.*' ':!**/*.stories.*' \
+  | grep -E '^\+\s*(//|/\*\*|\*|\{/\*)'
+```
+
+- Expected output: empty. Each surviving line must be one the repo's own rule
+  allows (kmono `docs/rules/comments.md`: upstream quirk, ticket link, deliberate
+  choice that looks wrong) and must be one line.
+- Anything that restates the code, narrates a branch a test already pins, or
+  explains a why a better name could carry → `BLOCKED-COMMENTS`, routed to the
+  owning branch as a rename/split/test, never as a shorter comment.
+- Origin: the FE-1270 stack shipped ~30 such lines across three PRs before the
+  reviewer said it.
+
 ## Phase 6 — G4 regression review
 
 Fixes introduce regressions at the same rate as features, so the fix diff gets
@@ -195,8 +214,8 @@ Report one of:
 - **PASS** — every claim independently confirmed. State what you verified and
   how, not that the agent said so.
 - **BLOCKED** — list the failed invariant(s) by ID (`BLOCKED-SIGNING`, evidence
-  stripped, unpushed sha, red CI, `BLOCKED-UNADDRESSED` review threads, open
-  regression). Nothing merges or undrafts on a BLOCKED gate.
+  stripped, unpushed sha, red CI, `BLOCKED-COMMENTS` (G20),
+  `BLOCKED-UNADDRESSED` review threads, open regression). Nothing merges or undrafts on a BLOCKED gate.
 
 Then a **routing plan (G8)**: which worktree/branch owns each fix per the
 stacked-PR convention, which items are answer-only, which need a user decision.
