@@ -84,6 +84,10 @@ If the work carries PR evidence (screenshots, overlays, parity tables):
 - The capture-commit note equals the pushed head — stale captures are not
   evidence for this head.
 - The body validator passes (e.g. `codex/jumay-parity/scripts/validate-pr-body.js`).
+- A video's caption numbers come from the load in that clip, the body states the
+  sample size and any excluded outlier, and the clip plays in the rendered body.
+  A single-load speed comparison is **BLOCKED**, not a nit — one outlier load can
+  reverse the conclusion.
 - Any removal is valid ONLY as remove-AND-regenerate, and must be reported
   explicitly. A body edit that quietly dropped images is a **BLOCKED** finding,
   not a nit — this rule exists because an executor stripped all 10 images from a

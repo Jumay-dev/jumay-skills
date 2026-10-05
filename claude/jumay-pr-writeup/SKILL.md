@@ -105,6 +105,52 @@ GH_SESSION_TOKEN="$TOKEN" gh image --repo <owner>/<repo> shot1.png shot2.png
 Verify each URL returns 200 **with that same session** before trusting it;
 anonymous curl 404s on a private repo even for a valid asset.
 
+#### Video, when a still cannot show the change
+
+Load speed, a transition, an animation, scroll behaviour — a screenshot proves
+none of these. Attach a clip instead, under the same `## Screenshots` heading. A
+player has no alt text, so label it on the line above:
+
+```markdown
+**Loan page cold load — master (left) vs this PR (right)**
+
+https://github.com/user-attachments/assets/…
+
+Median of 5 interleaved loads per side; one master outlier at 0.9s settled excluded.
+```
+
+Put the bare attachment URL on its own line — that is the form GitHub renders as
+a player — and open the rendered body to confirm it plays before moving on.
+
+Tooling: `agent-browser` records, `ffmpeg` joins and captions, `ffprobe` checks
+length. Check up front — `command -v agent-browser ffmpeg ffprobe` — and if
+ffmpeg is missing, ask the user to run `! brew install ffmpeg` rather than
+shipping an un-captioned single clip.
+
+- **Record from `about:blank`** so the load itself is in frame:
+  `agent-browser open about:blank && agent-browser record start ./a.webm && agent-browser open <url>`,
+  wait until settled, `agent-browser record stop`.
+- **Before/after is one clip, side by side.** Record the base preview and the PR
+  preview with the same viewport and the same navigation, then
+  `ffmpeg -i before.webm -i after.webm -filter_complex "[0:v][1:v]hstack=inputs=2" -c:v libx264 -pix_fmt yuv420p out.mp4`,
+  with a `drawtext` label on each side. Keep the two navigations aligned to the
+  same start frame, or the comparison is the offset, not the change.
+- **Caption load speed with measured numbers** — first byte, first paint,
+  settled, HTML size — read via `agent-browser eval` from the Navigation and Paint
+  Timing APIs of *that exact load*, never from a different run.
+- **One load per side is not evidence.** Record several loads per side,
+  interleaved (base, PR, base, PR…) so network drift hits both equally, and show
+  the median one. A single load can catch an outlier and reverse the story — a
+  rare fast base load once made a faster PR look slower. State the sample size
+  and any excluded outlier under the video.
+- **Check every clip's length with `ffprobe`** before choosing one:
+  `ffprobe -v error -show_entries format=duration -of csv=p=0 a.webm`.
+  `agent-browser record` sometimes cuts clips short, and a truncated clip
+  silently drops the slow part of the load.
+- **Convert to mp4** (H.264, `yuv420p`) before uploading; upload with the same
+  `gh image` session as screenshots and verify the URL the same way.
+- **Show the clip to the user before posting it.**
+
 ### 5. `## QA steps`
 
 How a reviewer reproduces the change by hand. Required. CI proves the code is
@@ -253,6 +299,7 @@ at the current head, do not just delete it.
 - [ ] Problem quotes the real user-visible symptom
 - [ ] "What this does" is one paragraph
 - [ ] Screenshots cover the states, uploaded via the authorized session, each 200
+- [ ] Motion changes carry a labelled clip: side-by-side, captioned from the same load, median of interleaved runs, length checked, shown to the user first
 - [ ] QA steps open with a verified direct preview link (real route, real data, one hop), or say explicitly why there is nothing to preview
 - [ ] QA steps cover the happy path, name their prerequisites, and state expected results
 - [ ] Any bot-appended block preserved verbatim

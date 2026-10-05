@@ -24,7 +24,9 @@ Open or update the PR, with evidence intact, and route it for review.
    `## Screenshots` / `## QA steps`. Nothing else. The body describes **the
    change** — it does not defend the work, narrate the process, or restate what
    CI already proves.
-3. **Evidence (G2)**: screenshots are *uploaded*, not linked. Never remove
+3. **Evidence (G2)**: screenshots are *uploaded*, not linked; a motion change
+   (load speed, transition, animation) carries a labelled before/after clip, per
+   `/jumay-pr-writeup` § Video. Never remove
    evidence without regenerating it at the current head in the same task —
    "stale screenshot cleanup" is only valid as remove-AND-regenerate, and the
    removal is reported explicitly, not buried in a clause.
