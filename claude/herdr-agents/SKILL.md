@@ -122,7 +122,8 @@ start_agent() {
   printf 'START-BUSY %s: pane never reached a shell prompt\n' "$name" >&2; return 2
 }
 
-start_agent review-852 codex "$P" -- -m gpt-5.6-sol -c model_reasoning_effort=xhigh
+start_agent review-852 codex "$P" -- --dangerously-bypass-approvals-and-sandbox \
+  -m gpt-5.6-sol -c model_reasoning_effort=xhigh
 herdr pane rename "$P" review-852
 ```
 
@@ -130,8 +131,34 @@ Name it and label the pane identically. Agent names must match
 `[a-z][a-z0-9_-]{0,31}` and be unique among live agents — check `agent list`
 for collisions from a concurrent run.
 
-Permission bypass is environmental, not a flag you pass: Claude's comes from the
-user's `claude` shell alias, Codex's from `~/.codex/config.toml`.
+**Pass the permission-bypass flag explicitly. Do not assume the environment
+grants it.** A spawned agent starts with default permissions, and the first tool
+call that needs approval parks the agent on a prompt it cannot answer — it looks
+"working" in `agent list` while doing nothing, and the run stalls silently until
+someone reads the pane.
+
+| kind | flag, after the `--` |
+|---|---|
+| `claude` | `--dangerously-skip-permissions` |
+| `codex` | `--dangerously-bypass-approvals-and-sandbox` |
+
+```sh
+start_agent review-852 codex "$P" -- --dangerously-bypass-approvals-and-sandbox \
+  -m gpt-5.6-sol -c model_reasoning_effort=xhigh
+start_agent impl-852 claude "$P" -- --dangerously-skip-permissions
+```
+
+An earlier version of this skill claimed bypass was environmental — Claude's from
+a `claude` shell alias, Codex's from `~/.codex/config.toml`. Do not rely on that.
+The alias may not exist, and a config file grants nothing to an MCP server the
+agent has not approved before: an agent spawned without the flag stalled on
+`Allow the codedb MCP server to run tool "codedb_status"?` on a machine whose
+config was supposedly permissive.
+
+Verifying, if you want certainty before dispatching: a bypassed Claude pane shows
+`bypass permissions on` on its footer line rather than `auto mode on`. Cheaper
+still, just always pass the flag — it is idempotent when the environment already
+allows it.
 
 ## Dispatching tasks
 
@@ -164,9 +191,12 @@ Retries the stalled case and the swallowed case; any other error needs eyes.
 
 ```sh
 # Input-token counter from the TUI status line.
+# The two TUIs render it differently and a matcher for one silently reports
+# "no intake" for the other, sending you into a resend loop against an agent
+# that is already working. Codex: `… 90.2K in · 389 out`. Claude: `↓ 1.6k tokens`.
 tokens_in() {
-  herdr agent read "$1" --source visible --lines 4 2>/dev/null \
-    | grep -oE '[0-9.]+[KM]? in' | tail -1
+  herdr agent read "$1" --source visible --lines 6 2>/dev/null \
+    | grep -oE '[0-9.]+[KkMm]? (in|tokens)' | tail -1
 }
 
 # dispatch <agent-name> <brief> [timeout_ms]
