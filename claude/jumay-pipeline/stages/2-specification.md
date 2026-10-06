@@ -83,6 +83,9 @@ unchanged. Everything below it is the executor contract and never becomes an AC.
    every consumer before choosing the failure mode.
 8. **Pre-declare the evidence** the PR will need (screenshots, overlays, scores)
    so stage 3 captures it while the context is live, not at stage 6 from memory.
+   If the change is motion a still cannot show — load speed, a transition, an
+   animation, scroll behaviour — declare a before/after clip and the metric its
+   caption will carry (see `/jumay-pr-writeup` § Video).
 
 ## Grill the draft
 
