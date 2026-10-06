@@ -35,6 +35,7 @@ Use this for one-ticket webapp fixes where the expected outcome is a shipped PR,
 5. Publish the PR.
    - Inspect `git status` and `git diff`; stage only intended files.
    - Commit with a conventional commit scope from the repo config.
+   - Never create or push an unsigned commit: commit with `git commit -S`, then confirm `git log --format='%G? %h' origin/master..HEAD` shows `G` on every commit. If signing fails, stop and report `BLOCKED-SIGNING` — never commit without a signature.
    - Push the branch and open a draft PR unless the user explicitly requested ready-for-review.
    - PR body should include the ticket link, what changed, why, and validation evidence.
 

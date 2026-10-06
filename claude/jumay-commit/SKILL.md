@@ -97,6 +97,13 @@ user's work in a stash they did not create.
    format switch, no unsigned commit when the signer is unavailable. On signing
    failure: STOP, leave the work uncommitted, report `BLOCKED-SIGNING`. Do not
    retry with a workaround.
+5. **Never commit or push an unsigned commit.** Commit with `git commit -S` so
+   signing does not depend on the checkout's config, then check
+   `git log -1 --format=%G?` shows `G`. Commit only from the task worktree — a
+   scratch clone (`/tmp`, a recovery copy) lacks the repo's signing config and
+   produces unsigned commits that slip through. Found an unsigned commit before
+   pushing? Re-sign it (`git rebase --exec 'git commit --amend --no-edit -S'
+   <base>`), confirm the tree is unchanged, then push.
 
 ## Phase 6 — Verify with your own commands (G7)
 

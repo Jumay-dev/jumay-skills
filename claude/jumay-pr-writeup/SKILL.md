@@ -25,7 +25,30 @@ type(scope): short description (FE-1234)
 - Linear key(s) in parens at the end, comma-separated for several. Omit only
   when there is genuinely no issue.
 - The repo squash-merges, so this title becomes the commit on master. Write it
-  as the changelog line it will become.
+  as the changelog line it will become. It also means the PR title, not the local
+  commit message, is what lands — retitling the PR is enough.
+- **Scope a multi-PR initiative by its own name.** When a stack of PRs builds one
+  feature, give them all a shared scope so a reviewer scanning open PRs sees one
+  effort without opening any of them, and `git log --grep` finds the whole thing
+  afterwards.
+
+  ```
+  feat(cash-balance): add transaction destinations and projected yield (FET1-1459)
+  fix(cash-balance): show the form heading on both tabs (FET1-1460)
+  feat(cash-balance): add the deposit rate and yield summary (FET1-1379)
+  ```
+
+  This deliberately adds a scope the repo has not used before, which is fine — the
+  initiative *is* a product area, and the alternatives are worse: a `Cash Balance:`
+  prefix inside the subject costs a double colon in every changelog line, and
+  dropping the conventional-commit prefix to mirror the ticket titles breaks from
+  every other commit on master.
+
+  Check what is already in use before picking a name, so you extend the vocabulary
+  rather than duplicating it:
+  `git log --oneline -60 | grep -oE '^[a-f0-9]+ [a-z]+\([a-z-]+\)'`.
+  Nothing in CI lints the title — this is convention, so it is on you to keep the
+  stack consistent once the first PR sets the scope.
 - Check the target repo's `CLAUDE.md` / `CONTRIBUTING.md` first — if it states a
   convention, that wins over this file.
 
@@ -90,6 +113,40 @@ reviewer is the one who checks that.
 
 Numbered, imperative, each step with its expected result. Lead with the state the
 reviewer needs — a step they cannot reach is worse than no step at all.
+
+**Open with a direct preview link, deep enough to land on the change.** Cloudflare
+posts branch previews on every PR; a bare origin makes the reviewer navigate there
+themselves, and they will land somewhere else or give up. Link the exact page, with
+whatever params the state needs:
+
+```markdown
+https://<branch>-frontend.kmno.workers.dev/earn/lend/steakhouse-usdc/vault-overview?DEBUG_WALLET=<address>
+https://<branch>-storybook.kmno.workers.dev/?path=/story/widgets-depositformratesummary--populated
+```
+
+Rules that make the link actually work:
+
+- **Verify it before pasting.** `curl -o /dev/null -w '%{http_code}'`, following
+  redirects. A 307 means you have the pre-redirect form — paste the target so the
+  reviewer lands in one hop. Give it a generous timeout: a page that fans out to
+  portfolio queries can take 6s+ and a short `--max-time` reports `000`, which is
+  curl giving up, not the server failing.
+- **Use a real route.** Confirm the path against `src/routes/` rather than memory —
+  a plausible-looking wrong path 404s and burns the reviewer's trust in the rest of
+  the body.
+- **Use real data.** Slugs and addresses from `*.fixture.ts` are invented and 404 in
+  production. Pull them from the same source the app reads.
+- **Storybook: verify the story id against the deployed `index.json`**, not the
+  `title:` in the source. Link `/?path=/story/<id>` — the canonical shareable form.
+- **A debug wallet beats "connect a wallet first"** when the state needs one. It is a
+  root search param retained across navigation, so it survives in-page navigation.
+- **When there is genuinely nothing to preview, say so and say why.** A model-only or
+  refactor-only PR should state that plainly and name the PR where the change becomes
+  visible. Silence reads as an oversight; an explicit "no UI surface, renders at
+  FE-xxxx" reads as a decision.
+- **In a stack, link the surface that actually changed.** A component added bottom-up
+  has no app surface until its wiring PR — link Storybook and say the app preview is
+  unchanged by design, rather than linking an app page where nothing differs.
 
 ```markdown
 **Prerequisites:** wallet connected, on a loan you hold.
@@ -190,11 +247,13 @@ at the current head, do not just delete it.
 ## Checklist
 
 - [ ] Title is `type(scope): description (FE-xxxx)` and reads as a changelog line
+- [ ] Title scopes the initiative when the PR is one of a stack, and matches the scope its siblings use
 - [ ] Body is `Closes` + Problem + What this does + Screenshots + QA steps, in that order
 - [ ] No test counts, no limitations section, no review history
 - [ ] Problem quotes the real user-visible symptom
 - [ ] "What this does" is one paragraph
 - [ ] Screenshots cover the states, uploaded via the authorized session, each 200
+- [ ] QA steps open with a verified direct preview link (real route, real data, one hop), or say explicitly why there is nothing to preview
 - [ ] QA steps cover the happy path, name their prerequisites, and state expected results
 - [ ] Any bot-appended block preserved verbatim
 - [ ] No hard-wrapped prose — each paragraph, QA step and bullet is one line

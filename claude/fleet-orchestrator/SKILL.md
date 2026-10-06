@@ -44,6 +44,10 @@ One self-contained prompt per agent, containing:
 - the worker skill to use (`$<skill>` syntax for Codex),
 - isolation instruction (fresh worktree from the refreshed base),
 - done criteria (e.g. "one PR, visual gate >97", "checks green"),
+- the signing rule, verbatim: "every commit signed with `git commit -S`, never
+  commit from a scratch clone; on signing failure stop with `BLOCKED-SIGNING`".
+  Codex workers do not load `/jumay-commit`, so the brief is the only place they
+  learn it,
 - org context the worker skill leaves as placeholders: the GitHub `owner/repo`
   and, when a handoff is expected, the review channel/reviewers. Published
   skills are sanitized; the dispatch prompt is where real values enter.
@@ -78,6 +82,10 @@ Agents report optimistically. After each agent finishes, check its claims with
 your own tool calls:
 
 - PR exists and is green: `gh pr view/checks`.
+- Every commit is signed: `git log --format='%G? %h %s' origin/<base>..<branch>`
+  shows `G` on each, and on GitHub `pulls/<n>/commits` reports
+  `verification.verified: true`. An unsigned commit is a blocker — re-sign it
+  before pushing (`/jumay-commit` rule 5), never push or merge it as is.
 - Review threads: query unresolved counts via the GraphQL `reviewThreads` API.
   Watch for the classic gap: agents treat "outdated" threads as closed, and
   review-bot threads that land after the agent's last sweep get missed.

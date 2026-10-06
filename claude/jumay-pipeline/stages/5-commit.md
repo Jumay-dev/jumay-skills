@@ -30,6 +30,8 @@ The diff + `selfreview.md` with a passing verdict.
    git log --format='%G? %h %s' origin/<base>..HEAD
    ```
    Every new commit shows `G`. An `N` or `E` means the signer was bypassed.
+   Never push one: re-sign it first (`/jumay-commit` rule 5). This covers
+   commits made by spawned agents too — check them before you push their work.
 4. **Restack with `gh stack`**, not hand-rolled rebase chains. `gh stack sync`
    cascade-rebases onto updated parents and restores every branch on conflict
    rather than leaving the stack half-rebased. Fall back to

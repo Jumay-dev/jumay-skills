@@ -53,6 +53,10 @@ preserved and the task starts from the correct base.
      requested by the user.
    - Run implementation, validation, commit, push, and PR commands from the task
      worktree.
+   - Never commit from a scratch clone or copy (`/tmp`, a recovery checkout).
+     It lacks the repo's signing config, so its commits are unsigned. If the
+     worktree becomes read-only, stop and report it — do not clone elsewhere to
+     commit.
 
 6. Record setup evidence in the final report or PR body.
    - Worktree path.
