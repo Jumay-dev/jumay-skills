@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-25 — Astra and Sol implementation workflow for Codex
+
+- `$jumay-investigate-implement` has Astra Medium investigate and write the
+  specification, then hands implementation to Sol Medium in a Herdr pane.
+  Astra reviews the diff, self-tests affected flows, and sends fixes back to Sol.
+- `$herdr-agents` brings the Claude skill's Herdr launch, dispatch, and
+  monitoring workflow to Codex.
+
 ## 2026-09-07 — a comment is a transparency failure (G20)
 
 - New `docs/quality-gate.md` G20: if code needs a comment to be understood,

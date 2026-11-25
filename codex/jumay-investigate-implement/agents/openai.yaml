@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jumay Investigate and Implement"
+  short_description: "Specify with Astra and implement with Sol in Herdr"
+  default_prompt: "Use $jumay-investigate-implement to investigate this task with Astra medium, implement it with Sol medium in Herdr, then review and self-test it."

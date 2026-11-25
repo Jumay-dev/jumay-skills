@@ -1,0 +1,4 @@
+interface:
+  display_name: "Herdr Agents"
+  short_description: "Launch and monitor Codex agents in Herdr panes"
+  default_prompt: "Use $herdr-agents to start and monitor a Codex agent in a Herdr pane."

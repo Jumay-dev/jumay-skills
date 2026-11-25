@@ -18,8 +18,10 @@ each landing a green PR in 25–55 minutes.
 | `codex/jumay-parity` | `$jumay-parity` | Design-parity ticket end to end: Figma evidence, visual gate, PR, review loop |
 | `codex/jumay-worktree` | `$jumay-worktree` | Fresh isolated git worktree per ticket (safe parallel agents) |
 | `codex/jumay-oneshot` | `$jumay-oneshot` | Generic ticket-to-PR workflow with guardrails |
+| `codex/jumay-investigate-implement` | `$jumay-investigate-implement` | Astra Medium investigates and writes the spec, Sol Medium implements in Herdr, and Astra reviews and self-tests |
 | `codex/jumay-implementation-guardrails` | `$jumay-implementation-guardrails` | Code-quality guardrails (React Query boundaries, narrow types, design-level review fixes) |
 | `codex/jumay-review-message` | `$jumay-review-message` | Terse Slack review-request format |
+| `codex/herdr-agents` | `$herdr-agents` | Launch, brief, and monitor Codex agents in [Herdr](https://herdr.dev) panes |
 | `claude/herdr-agents` | `/herdr-agents` | Spawn and orchestrate agent fleets in [herdr](https://herdr.dev) panes |
 | `claude/fleet-orchestrator` | `/fleet-orchestrator` | Full orchestration loop: scope of tasks in, one agent per task, monitored and independently verified PRs out |
 | `claude/jumay-figma-implement` | `/jumay-figma-implement` | Figma pointer → merged-ready PR via a five-phase pipeline (investigate → interview → execute → verify → close), orchestrator-verified at every gate |
